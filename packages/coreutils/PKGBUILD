@@ -1,0 +1,42 @@
+# ArchOSX Maintainer: Kevin Barry <barryk gmail com>
+# ArchLinux Maintainer: judd <jvinet at zeroflux.org>
+pkgname=coreutils
+pkgver=6.12
+pkgrel=1
+pkgdesc="The basic file, shell and text manipulation utilities of the GNU operating system"
+arch=('macx86')
+license=('GPL3')
+url="http://www.gnu.org/software/coreutils"
+groups=('base')
+provides=('mktemp')
+conflicts=('mktemp')
+depends=('gettext')
+replaces=('sh-utils' 'fileutils' 'textutils' 'mktemp')
+backup=('etc/pam.d/su')
+options=('!emptydirs')
+source=(ftp://ftp.gnu.org/gnu/$pkgname/$pkgname-$pkgver.tar.gz)
+md5sums=('2ca9ac69823dbd567b905a9e9f53c4f6')
+
+build() {
+  cd $startdir/src/$pkgname-$pkgver
+
+  # only needed if new autoconf 2.62 is used
+  #autoreconf
+
+  # added pam patch and i18n patch from fedora cvs
+  # make head and tail recognize the old syntax (eg, tail -10)
+  export DEFAULT_POSIX2_VERSION=199209
+
+  #autoconf
+  ./configure --prefix=/opt/arch ac_cv_func_openat=no
+  make || return 1
+  make DESTDIR=$startdir/pkg install
+  rm -f $startdir/pkg/opt/arch/bin/hostname $startdir/pkg/opt/arch/share/man/man1/hostname.1 || return 1
+  rm -f $startdir/pkg/opt/arch/bin/uptime $startdir/pkg/opt/arch/share/man/man1/uptime.1 || return 1
+  rm -f $startdir/pkg/opt/arch/bin/groups $startdir/pkg/opt/arch/share/man/man1/groups.1 || return 1
+  rm -f $startdir/pkg/opt/arch/bin/kill $startdir/pkg/opt/arch/share/man/man1/kill.1|| return 1
+  #rm -f $startdir/pkg/opt/arch/lib/charset.alias # This can be created in a number of places. Right now we have coreutils own it
+  rm -rf $startdir/pkg/opt/arch/share/info # ArchLinux does use info for coreutils.
+                                           # If we add it, it requires an install script
+}
+

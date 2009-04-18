@@ -1,0 +1,49 @@
+# $Id: PKGBUILD 25315 2009-01-26 13:00:04Z giovanni $
+# Maintainer: Hugo Doria <hugo@archlinux.org>
+
+pkgname=mplayer
+pkgver=28347
+pkgrel=2
+pkgdesc="A movie player for linux"
+arch=('macx86')
+#depends=('libxxf86dga' 'libxv' 'libmad' 'giflib' 'cdparanoia' 'gtk2'
+#         'sdl' 'lame' 'libtheora' 'xvidcore' 'zlib' 'libmng' 'libxss'
+#         'libgl' 'smbclient' 'aalib' 'jack-audio-connection-kit'
+#         'x264>=20090108' 'faac' 'lirc-utils' 'ttf-dejavu' 'fribidi')
+
+depends=('libmad' 'giflib' 'lame' 'libtheora' 'libpng' 'fontconfig'
+         'libmng' 'x264>=20090108' 'faac' 'fribidi' 'zlib')
+license=('GPL')
+url="http://www.mplayerhq.hu/"
+makedepends=('libcaca' 'live-media' 'libdca')
+backup=('opt/arch/etc/mplayer/codecs.conf' 'opt/arch/etc/mplayer/input.conf')
+source=(ftp://ftp.archlinux.org/other/mplayer/${pkgname}-${pkgver}.tar.bz2
+        http://www.mplayerhq.hu/MPlayer/skins/Blue-1.7.tar.bz2)
+md5sums=('41fb540025a51930d318e99728a19c66'
+         'e4e2020d11b681aac898103b3ba723c4')
+
+build() {
+  # Custom CFLAGS break the mplayer build
+  unset CFLAGS
+  cd ${srcdir}/${pkgname}
+
+  ./configure --prefix=/opt/arch --disable-arts \
+      --disable-gl --disable-x11  \
+      --confdir=/opt/arch/etc/mplayer --disable-nas \
+      --disable-liblzo --disable-speex --disable-openal \
+      --enable-fribidi --disable-libdv --disable-musepack \
+      --language=all --disable-dvdnav --disable-esd --disable-mga \
+      --disable-libamr_nb --disable-lirc \
+      --with-extraincdir=/usr/lib/live-media --enable-freetype
+
+  #[ "$CARCH" = "i686" ] &&  sed 's|-march=i486|-march=i686|g' -i config.mak
+
+  make || return 1
+  make -j1 DESTDIR=${pkgdir} install || return 1
+  mkdir -p ${pkgdir}/opt/arch/etc/mplayer
+  cp etc/{codecs.conf,input.conf,example.conf} ${pkgdir}/opt/arch/etc/mplayer/
+  #ln -s /usr/share/fonts/TTF/DejaVuSans.ttf ${pkgdir}/usr/share/mplayer/subfont.ttf
+  rm -rf ${pkgdir}/usr/share/mplayer/font
+  mkdir -p ${pkgdir}/opt/arch/share/mplayer/skins/default
+  mv ${srcdir}/Blue ${pkgdir}/opt/arch/share/mplayer/skins/default
+}

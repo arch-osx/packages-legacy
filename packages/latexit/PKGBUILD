@@ -1,0 +1,43 @@
+# ArchOSX Maintainer: Kevin Barry <barryk gmail com>
+pkgname=latexit
+pkgver=1.16.1
+pkgrel=1
+pkgdesc="Quickly typeset LaTeX equations and drag'n'drop to iWork/MSOffice/etc"
+arch=('macx86')
+url="http://ktd.club.fr/programmation/latexit_en.php"
+group=('outside') # Installs to /Applications/LaTeXiT.app
+license=('custom')
+depends=('texlive-core')
+_latexitver=$(echo ${pkgver} | sed 's/\./_/g')
+_latexitDMG=("LaTeXiT-${_latexitver}.dmg")
+_latexitDIR=("LaTeXiT ${pkgver}")
+source=("http://ktd.club.fr/programmation/fichiers/${_latexitDMG}"
+        'latexit.sh')
+noextract=("${_latexitDMG}")
+    
+md5sums=('65512de2668337e8e8c146c5b2b186f3'
+         '7d8bebd4cbadbe0b1b8f34b2e6a6423e')
+
+build() {
+  cd ${srcdir}
+  hdiutil attach ${_latexitDMG} || return 1
+  cd "/Volumes/${_latexitDIR}" || return 1
+  install -d -m775 ${pkgdir}/Applications
+  cp -R LaTeXiT.app ${pkgdir}/Applications || return 1
+  chown -R root.0 ${pkgdir}/Applications
+
+  # Create cli launcher
+  mkdir -p ${pkgdir}/opt/arch/bin
+  install -m755 ${srcdir}/latexit.sh ${pkgdir}/opt/arch/bin/latexit
+
+  # Copy license
+  mkdir -p ${pkgdir}/opt/arch/share/licenses/${pkgname}
+  install -m644 Licence.rtf ${pkgdir}/opt/arch/share/licenses/${pkgname}
+  install -m644 Licence_CeCILL_V2-en.txt ${pkgdir}/opt/arch/share/licenses/${pkgname}
+  install -m644 Licence_CeCILL_V2-fr.txt ${pkgdir}/opt/arch/share/licenses/${pkgname}
+  install -m644 OgreKit-License.txt ${pkgdir}/opt/arch/share/licenses/${pkgname}
+  cd ${srcdir}
+  hdiutil detach "/Volumes/${_latexitDIR}"
+}
+
+# vim:set ts=2 sw=2 et:

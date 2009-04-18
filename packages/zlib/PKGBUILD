@@ -1,0 +1,34 @@
+# PKGBUILD autocreated by ABStoOSX 0.1
+# ArchLinux Maintainer: Pierre Schmitz <pierre@archlinux.de>
+
+pkgname=zlib
+pkgver=1.2.3.3
+pkgrel=3
+pkgdesc="A compression/decompression Library"
+arch=('macx86')
+license=('custom:zlib')
+url="http://www.zlib.net/"
+groups=('base')
+depends=( )
+source=("ftp://ftp.archlinux.org/other/zlib/zlib-${pkgver}.tar.gz"
+        "zlib_configure_ver3.patch"
+            # Mac ld doesn't like 1.2.3.3, use 1.2.3 for LD
+        "zlib_mac64.patch"
+            # Mac file operations are always 64 bit. Fix the zlib header
+       )
+md5sums=('c444cf020e5f0e3323b11f5a2d8af8d3'
+         '6c24088d5c12f171095fae83fd5905e4'
+         '5b40271174a5f69fee6356a464723d79')
+
+build() {
+	cd ${srcdir}/zlib-$pkgver
+    patch -p0 < $startdir/zlib_configure_ver3.patch
+    patch -p0 < $startdir/zlib_mac64.patch
+	./configure --prefix=/opt/arch --shared
+	make || return 1
+	make install prefix=${pkgdir}/opt/arch || return 1
+	chmod 644 ${pkgdir}/opt/arch/lib/libz.a
+
+	grep -A 24 '^  Copyright' zlib.h > license.txt
+	install -D license.txt ${pkgdir}/opt/arch/share/licenses/zlib/license.txt
+}

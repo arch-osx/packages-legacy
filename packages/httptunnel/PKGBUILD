@@ -1,0 +1,20 @@
+# PKGBUILD autocreated by ABStoOSX 0.2
+# $Id
+# ArchLinux Maintainer: dorphell <dorphell@archlinux.org>
+# Contributor: Tom Newsom <Jeepster@gmx.co.uk>
+
+pkgname=httptunnel
+pkgver=3.3
+pkgrel=1
+pkgdesc="httptunnel creates a bidirectional virtual data connection tunnelled in HTTP requests"
+arch=('macx86')
+url="http://www.nocrew.org/software/httptunnel"
+source=(http://www.nocrew.org/software/httptunnel/$pkgname-$pkgver.tar.gz)
+md5sums=('493cc0f5f21e9955db27ee9cd9a976d5')
+
+build() {
+cd $startdir/src/$pkgname-$pkgver
+./configure --prefix=/opt/arch
+make || return 1
+make prefix=$startdir/pkg/opt/arch install
+}

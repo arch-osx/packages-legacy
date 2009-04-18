@@ -1,0 +1,28 @@
+# PKGBUILD autocreated by ABStoOSX 0.2
+# $Id
+# ArchLinux Maintainer: Tobias Powalowski <tpowa@archlinux.org>
+
+pkgname=jasper
+pkgver=1.900.1
+pkgrel=1
+pkgdesc="a software-based implementation of the codec specified in the emerging JPEG-2000 Part-1 standard"
+arch=('macx86')
+url="http://www.ece.uvic.ca/~mdadams/jasper/"
+license=('custom')
+#depends=('libjpeg' 'glut' 'libxi' 'libxmu' 'mesa')
+depends=('libjpeg')
+#makedepends=('unzip')
+options=('!libtool')
+source=(http://www.ece.uvic.ca/~mdadams/$pkgname/software/$pkgname-$pkgver.zip)
+md5sums=('a342b2b4495b3e1394e161eb5d85d754')
+
+build() {
+  cd $startdir/src/$pkgname-$pkgver
+  ./configure --prefix=/opt/arch --enable-shared
+  make || return 1
+  make DESTDIR=$startdir/pkg install || return 1
+  mkdir -p ${pkgdir}/opt/arch/share
+  mv ${pkgdir}/opt/arch/man ${pkgdir}/opt/arch/share/man
+  mkdir -p ${pkgdir}/opt/arch/share/licenses/${pkgname}
+  install -m644 LICENSE ${pkgdir}/opt/arch/share/licenses/${pkgname}/
+}

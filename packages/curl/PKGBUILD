@@ -1,0 +1,27 @@
+# PKGBUILD autocreated by ABStoOSX 0.2
+# $Id
+# ArchLinux Maintainer: Eric Belanger <eric@archlinux.org>
+# Contributor: Lucien Immink <l.immink@student.fnt.hvu.nl>
+
+pkgname=curl
+pkgver=7.19.3
+pkgrel=1
+pkgdesc="An URL retrival utility and library"
+arch=('macx86')
+url="http://curl.haxx.se"
+license=('MIT')
+#depends=('zlib' 'openssl>=0.9.8b' 'ca-certificates')
+depends=('zlib' 'openssl>=0.9.8b' 'ca-certificates')
+options=('!libtool')
+source=(http://curl.haxx.se/download/${pkgname}-${pkgver}.tar.bz2)
+md5sums=('10eb8c13350c735eff20d7b4530be8cd')
+sha1sums=('c2ee72537d422bac1b10d8bfaa0401c12a3b2407')
+
+build() {
+  cd ${srcdir}/${pkgname}-${pkgver}
+  ./configure --prefix=/opt/arch --without-libidn --disable-ldap \
+    --with-ca-bundle=/opt/arch/etc/ssl/certs/ca-certificates.crt || return 1
+  make || return 1
+  make DESTDIR=${pkgdir} install || return 1
+  install -D -m644 COPYING ${pkgdir}/opt/arch/share/licenses/${pkgname}/COPYING || return 1
+}

@@ -1,0 +1,27 @@
+# Contributor: Tom Wambold <tom5760@gmail.com>
+pkgname=macfuse
+pkgver=2.0.3.2
+pkgrel=1
+pkgdesc="Allows you to extend Mac OS X's native file handling capabilities via 3rd-party file systems."
+arch=("macx86")
+url="http://macfuse.googlecode.com/"
+license=('BSD')
+depends=('glib2')
+source=('http://macfuse.googlecode.com/files/MacFUSE-2.0.3,2.dmg')
+noextract=('http://macfuse.googlecode.com/files/MacFUSE-2.0.3,2.dmg')
+md5sums=('ad90fa22ab72a19cd95e48d57be2fee9')
+
+build() {
+  cd "$srcdir/"
+  hdiutil attach MacFUSE-2.0.3,2.dmg -mountpoint $srcdir/macfuse
+  cd "$pkgdir/"
+  gunzip -c $srcdir/macfuse/MacFUSE.pkg/Contents/Resources/10.5/MacFUSE\ Core.pkg/Contents/Archive.pax.gz \
+    | pax -r
+  hdiutil detach $srcdir/macfuse
+#  mkdir -p $pkgdir/opt/arch
+#  mv $pkgdir/usr/local/* $pkgdir/opt/arch
+#  rm -rf $pkgdir/usr
+#  sed -i '' 's:/usr/local:/opt/arch:g' "$pkgdir/opt/arch/lib/pkgconfig/fuse.pc"
+}
+
+# vim:set ts=2 sw=2 et:

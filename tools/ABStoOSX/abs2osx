@@ -1,0 +1,48 @@
+#!/usr/bin/perl
+# ABStoOSX is a (limited) script that will translate an ABS PKGBUILD into one
+# that can be used on arch-osx.
+# This script changes the common needs, but is by no means complete. A human is
+# still needed to manually confirm the output of this script.
+
+use strict;
+use Getopt::Long;
+
+my $inplace = '';
+GetOptions('--inplace', \$inplace);
+
+my $ver = "0.2";
+
+if ($#ARGV < 0) {
+    print "Usage: $0 /path/to/PKGBUILD > /path/to/new/PKGBUILD\n";
+    print "   or: $0 --inplace /path/to/PKGBUILD\n"; 
+    exit 0;
+}
+
+my $filepath = $ARGV[0];
+
+my $outbuffer =  "# PKGBUILD autocreated by ABStoOSX $ver\n# \$Id\n";
+
+open(F, "<$filepath");
+while(<F>) {
+    s/^#\s*Maintainer/# ArchLinux Maintainer/;
+    next if(/^# \$Id/); # Delete because we will generate our own
+    s/arch=\(.*?\)/arch=('macx86')/;
+    if(/^depends/)  {
+        s/\s*'glibc'\s*/ /;
+    }
+    s^/usr^/opt/arch^g;
+    s^usr/^/opt/arch/^g;
+    s^/etc^/opt/arch/etc^g;
+    s^/var^/opt/arch/var^g;
+    s^--strip-debug^-S^g;
+    if ($inplace) {
+        $outbuffer .= $_;
+    }
+}
+close(F);
+
+if ($inplace) {
+    open(F, ">$filepath");
+    print F $outbuffer;
+    close(F);
+}

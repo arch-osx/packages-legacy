@@ -1,0 +1,51 @@
+# Contributor: Kevin Barry <barryk gmail com>
+pkgname=f2c
+pkgver=2009.01.02
+pkgrel=1
+pkgdesc="fortran compiler and fortran-to-c translator"
+arch=('macx86')
+url="http://www.netlib.org/f2c/"
+provides=('fortran77')
+source=('http://netlib.sandia.gov/cgi-bin/netlib/netlibfiles.tar?filename=netlib/f2c'
+        'fc_optarch.patch'
+        'fc_improved_options.patch')
+noextract=('f2c')
+    
+md5sums=('2bf59e1f1fe45cb10cf1cfec366f9ac6'
+         '2d39b63d140d28362838f0996421ce45'
+         'd2f764a9289a4cac40059a712ada9012')
+build() {
+
+  mv f2c f2c.tar
+  rm -rf f2c_dir
+  tar xvf f2c.tar
+  mv f2c f2c_dir
+  cd "$srcdir/f2c_dir"
+
+  mkdir -p ${pkgdir}/opt/arch/{include,lib,bin}
+
+  gunzip -rf *
+
+  patch -p0 < ${startdir}/fc_optarch.patch
+  patch -p0 < ${startdir}/fc_improved_options.patch
+  rm -rf libf2c
+  mkdir libf2c
+  cd libf2c || return 1
+  unzip ../libf2c.zip
+  make -f makefile.u
+  install -m644 f2c.h ${pkgdir}/opt/arch/include/f2c.h
+  install -m644 libf2c.a ${pkgdir}/opt/arch/lib/libf2c.a
+
+  cd ../src || return 1
+  make -f makefile.u || return 1
+  install -m755 f2c ${pkgdir}/opt/arch/bin/f2c
+  
+  cd .. || return 1
+  install -m755 fc ${pkgdir}/opt/arch/bin/fc
+  ln -s fc ${pkgdir}/opt/arch/bin/f77
+  
+  mkdir -p ${pkgdir}/opt/arch/share/man/man1
+  install -m644 f2c.1t ${pkgdir}/opt/arch/share/man/man1/f2c.1
+}
+
+# vim:set ts=2 sw=2 et:

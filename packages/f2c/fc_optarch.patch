@@ -1,0 +1,42 @@
+--- fc.orig	2009-02-12 12:52:33.000000000 -0500
++++ fc	2009-02-12 13:22:54.000000000 -0500
+@@ -11,7 +11,7 @@
+ #	may be useful as way to pass system-specific stuff to the C compiler.
+ #	The script below simply appends to the initial CFLAGS value.
+ 
+-PATH=/usr/local/bin:/bin:/usr/bin
++PATH=/opt/arch/bin:/bin:/usr/bin
+ 
+ # f77-style shell script to compile and load fortran, C, and assembly codes
+ 
+@@ -94,7 +94,7 @@
+ EFLFLAGS=${EFLFLAGS:-'system=portable deltastno=10'}
+ RATFOR=${RATFOR:-ratfor}
+ RFLAGS=${RFLAGS:-'-6&'}
+-F2C=${F2C:-/usr/local/bin/f2c}
++F2C=${F2C:-/opt/arch/bin/f2c}
+ show_fc_help=0
+ case $1 in
+ 	--help)		show_fc_help=1;;
+@@ -122,8 +122,8 @@
+ cOPT=1
+ set -- `getopt acCD:gI:L:m:N:O:U:o:r:sSt:uw6 "$@"`
+ case $? in 0);; *) rc=$?; exit;; esac
+-CPPFLAGS=${CPPFLAGS:-'-I/usr/local/include'}
+-CFLAGSF2C=${CFLAGSF2C:-'-I/usr/local/include'}
++CPPFLAGS=${CPPFLAGS:-'-I/opt/arch/include'}
++CFLAGSF2C=${CFLAGSF2C:-'-I/opt/arch/include'}
+ OFILES=
+ trapuv=
+ strip=
+@@ -358,8 +378,8 @@
+ 
+ case $cOPT in 2)
+ #	case $trapuv in 1) OFILES="$OFILES -lfpe";; esac
+-#	$CC -Wl,-dont_warn_unused -o $OUTF -u MAIN__ -L/usr/local/lib $OFILES $LIBS
+-	$CC -o $OUTF -u MAIN__ -L/usr/local/lib $OFILES $LIBS
++#	$CC -Wl,-dont_warn_unused -o $OUTF -u MAIN__ -L/opt/arch/lib $OFILES $LIBS
++	$CC -o $OUTF -u MAIN__ -L/opt/arch/lib $OFILES $LIBS
+ 	case $strip in 1) strip $OUTF;; esac
+ 	;; esac
+ rc=$?

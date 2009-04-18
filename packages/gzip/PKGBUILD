@@ -1,0 +1,28 @@
+# Maintainer: judd <jvinet@zeroflux.org>
+pkgname=gzip
+pkgver=1.3.12
+pkgrel=4
+pkgdesc="GNU compression utility"
+arch=('macx86')
+url="http://www.gzip.org"
+license=('GPL')
+groups=('base')
+depends=('bash')
+makedepends=('patch')
+source=(ftp://ftp.gnu.org/pub/gnu/gzip/gzip-$pkgver.tar.gz
+        gzip-fixutimens.patch)
+
+build() {
+  cd $startdir/src/$pkgname-$pkgver
+  patch -Np1 -i ${startdir}/src/gzip-fixutimens.patch || return 1
+
+  ./configure --prefix=/opt/arch
+  make || return 1
+  mkdir -p $startdir/pkg/opt/arch/bin
+  make prefix=$startdir/pkg/opt/arch install
+  cd $startdir/pkg/opt/arch/bin
+  ln -sf $pkgname compress
+  rm $pkgdir/opt/arch/share/info/dir
+}
+md5sums=('b5bac2d21840ae077e0217bc5e4845b1'
+         'cb592761476921018386031d91625153')

@@ -1,0 +1,45 @@
+# ArchOSX Maintainer: Kevin Barry <barryk gmail com>
+# ArchLinux Maintainer: dorphell <dorphell@archlinux.org>
+# ArchLinux Maintainer: Travis Willard <travis@archlinux.org>
+# ArchLinux Maintainer: Douglas Soares de Andrade <douglas@archlinux.org>
+
+pkgname=libpng
+pkgver=1.2.34
+pkgrel=1
+pkgdesc="A collection of routines used to create PNG format graphics files"
+arch=('macx86')
+url="http://www.libpng.org/pub/png/libpng.html"
+license=('custom')
+depends=('zlib')
+options=('!libtool')
+source=("http://downloads.sourceforge.net/sourceforge/${pkgname}/${pkgname}-${pkgver}.tar.bz2"
+        "http://hp.vector.co.jp/authors/VA013651/lib/libpng-${pkgver}-apng.patch.gz")
+options=('!libtool')
+md5sums=('37362876feb21344fd3af1228527db0f'
+         'a7ee9fd9af34692b75eedd5b03b69ca9')
+
+build() {
+  cd ${startdir}/src/${pkgname}-${pkgver}
+
+  # Add animated PNG (apng) support
+  # see http://hp.vector.co.jp/authors/VA013651/freeSoftware/apng.html
+  patch -p1 -i $srcdir/libpng-${pkgver}-apng.patch || return 1
+
+  glibtoolize --force --copy || return 1
+  aclocal || return 1
+  autoconf || return 1
+  automake --add-missing || return 1
+
+  ./configure --prefix=/opt/arch || return 1
+
+  sed -e 's^LIBS = -lz^LIBS = -L/opt/arch/lib -lz^' -i~ Makefile
+  make ECHO=echo || return 1
+  make ECHO=echo DESTDIR=${startdir}/pkg install || return 1
+
+  cd contrib/pngminus
+  make ECHO=echo PNGLIB="-L/opt/arch/lib -L${startdir}/pkg/opt/arch/lib -lpng" -f makefile.std png2pnm pnm2png
+  install -m755 png2pnm pnm2png ${startdir}/pkg/opt/arch/bin
+  install -m755 -d ${startdir}/pkg/opt/arch/share/licenses/${pkgname}
+  install -m644 ../../LICENSE ${startdir}/pkg/opt/arch/share/licenses/${pkgname}/ || return 1
+}
+

@@ -1,0 +1,11 @@
+--- readline.h.orig	2009-02-11 22:18:37.000000000 -0500
++++ readline.h	2009-02-11 22:19:46.000000000 -0500
+@@ -27,6 +27,8 @@
+ extern "C" {
+ #endif
+ 
++#include <stdio.h>
++
+ #if defined (READLINE_LIBRARY)
+ #  include "rlstdc.h"
+ #  include "rltypedefs.h"

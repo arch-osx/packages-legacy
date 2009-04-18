@@ -1,0 +1,22 @@
+# ArchLinux Maintainer: Aaron Griffin <aaron archlinux.org>
+# Contributor: Vinay S Shastry <vinayshastry gmail.com>
+
+pkgname=yasm
+pkgver=0.7.2
+pkgrel=1
+pkgdesc="A rewrite of NASM to allow for multiple syntax supported (NASM, TASM, GAS, etc.)"
+arch=('macx86')
+license=('custom')
+url="http://www.tortall.net/projects/yasm/"
+depends=('gettext')
+source=(http://www.tortall.net/projects/yasm/releases/$pkgname-$pkgver.tar.gz)
+options=('!libtool')
+md5sums=('cc9360593de5625dca286f0bfcb27dd5')
+
+build() {
+  cd $startdir/src/$pkgname-$pkgver
+  ./configure --prefix=/opt/arch
+  make || return 1
+  make DESTDIR=$startdir/pkg install
+  install -Dm644 COPYING $startdir/pkg/opt/arch/share/licenses/$pkgname/COPYING
+}

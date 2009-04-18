@@ -1,0 +1,27 @@
+# PKGBUILD autocreated by ABStoOSX 0.2
+# $Id
+# ArchLinux Maintainer: Vesa Kaihlavirta <vegai@iki.fi>
+# Contributor: Michael Baehr <usemike@spamblocked.com>
+
+pkgname=ffcall
+pkgver=1.10
+pkgrel=3
+pkgdesc="C library for implementing foreign function calls in embedded interpreters"
+arch=('macx86')
+url="http://www.haible.de/bruno/packages-ffcall.html"
+license=('GPL2')
+options=('!libtool' '!makeflags')
+source=(http://www.haible.de/bruno/gnu/${pkgname}-${pkgver}.tar.gz)
+md5sums=('2db95007e901f3bc2ae7e5a9fe9ebea4')
+
+build() {
+  cd ${startdir}/src/${pkgname}-${pkgver}
+  if [ "$CARCH" = "x86_64" ]; then
+    ./configure --prefix=/opt/arch --mandir=/opt/arch/share/man --with-pic || return 1
+  else
+    ./configure --prefix=/opt/arch --mandir=/opt/arch/share/man || return 1
+  fi
+  make || return 1
+  install -d ${startdir}/pkg/opt/arch/share/man || return 1
+  make DESTDIR=${startdir}/pkg/ install || return 1
+}

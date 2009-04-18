@@ -1,0 +1,42 @@
+# Contributor:  Kevin Barry <barryk gmail com>
+pkgname=stage3-svn
+pkgver=7336
+pkgrel=1
+pkgdesc="Robotic simulator"
+url="http://playerstage.sourceforge.net/"
+arch=('macx86')
+license=('GPL')
+depends=('fltk' 'player')
+group=('playerstage')
+provides=('stage3')
+conflicts=('stage3')
+makedepends=('cmake' 'python')
+
+_svntrunk="http://playerstage.svn.sourceforge.net/svnroot/playerstage/code/stage/trunk"
+_svnmod="stage"
+
+build() {
+  cd $startdir/src
+  msg "Connecting to playerstage.svn.sourceforge.net SVN server...."
+  svn co $_svntrunk $_svnmod
+  msg "Finished svn pull. Starting make..."
+
+  cd stage
+  if [ \! -e libstageplugin/p_camera.cc ]; then
+    patch -p0 < $startdir/stage3_camera.diff
+  fi
+  cmake -DCMAKE_INSTALL_PREFIX=/opt/arch .
+  make || return 1 
+  make DESTDIR=$startdir/pkg install || return 1
+  rm $startdir/pkg/opt/arch/lib/libstage.dylib
+  ln -s libstage.3.1.0.dylib $startdir/pkg/opt/arch/lib/libstage3.dylib
+  rm -rf $startdir/pkg/opt/arch/share/stage
+  ln -s stageplugin.so $startdir/pkg/opt/arch/lib/libstageplugin3.so
+  mv $startdir/pkg/opt/arch/lib/pkgconfig/stage.pc $startdir/pkg/opt/arch/lib/pkgconfig/stage3.pc
+  install_name_tool -change libstage.3.1.0.dylib /opt/arch/lib/libstage.3.1.0.dylib ${pkgdir}/opt/arch/lib/libstageplugin3.so
+  install_name_tool -change libstage.3.1.0.dylib ${pkgdir}/opt/arch/lib/libstage.3.1.0.dylib ${pkgdir}/opt/arch/bin/stage
+  install_name_tool -id /opt/arch/lib/libstage.3.1.0.dylib ${pkgdir}/opt/arch/lib/libstage.3.1.0.dylib
+
+
+}
+# vim:syntax=sh

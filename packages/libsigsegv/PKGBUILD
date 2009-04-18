@@ -1,0 +1,22 @@
+# PKGBUILD autocreated by ABStoOSX 0.2
+# $Id
+# Contributor: Johannes Weiner <hannes@saeurebad.de>
+
+pkgname=libsigsegv
+pkgver=2.6
+pkgrel=1
+arch=('macx86')
+pkgdesc="Page fault detection library"
+url="http://libsigsegv.sourceforge.net/"
+license=('GPL')
+depends=( )
+options=('!libtool')
+source=(http://ftp.gnu.org/gnu/libsigsegv/libsigsegv-${pkgver}.tar.gz)
+md5sums=('7e24993730649d13c6eabc28bd24de35')
+
+build() {
+  cd ${startdir}/src/libsigsegv-${pkgver}
+  ./configure --prefix=/opt/arch --enable-shared
+  make || return 1
+  make DESTDIR=${startdir}/pkg install
+}

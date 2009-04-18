@@ -1,0 +1,11 @@
+--- configure.orig	2009-02-09 01:01:25.000000000 -0500
++++ configure	2009-02-09 01:01:34.000000000 -0500
+@@ -15925,7 +15925,7 @@
+ 		;;
+ 	darwin*)
+ 		host_os_darwin=yes
+-		SIZECMD="stat -f %z"
++		SIZECMD="/usr/bin/stat -f %z"
+ 		;;
+ esac
+ 

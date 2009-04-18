@@ -1,0 +1,28 @@
+# PKGBUILD autocreated by ABStoOSX 0.2
+# $Id
+# ArchLinux Maintainer: Jan de Groot <jgc@archlinux.org>
+
+# Notice:
+# When building a new major version, build, install, build again.
+#
+pkgname=gnutls
+pkgver=2.6.3
+pkgrel=1
+pkgdesc="A library which provides a secure layer over a reliable transport layer"
+arch=('macx86')
+license=('GPL3' 'LGPL')
+url="http://www.gnu.org/software/gnutls/"
+#install=gnutls.install # requires archosx install-info
+options=('libtool')
+#depends=('gcc-libs>=4.3.2' 'libtasn1>=1.7' 'readline' 'zlib' 'libgcrypt>=1.4.3')
+depends=('libtasn1>=1.7' 'readline' 'zlib' 'libgcrypt>=1.4.3')
+source=(ftp://ftp.gnutls.org/pub/gnutls/${pkgname}-${pkgver}.tar.bz2)
+md5sums=('c6d2d1996b87b238ad6f73f92225d9a2')
+
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  ./configure --prefix=/opt/arch --with-zlib --disable-guile || return 1
+  make || return 1
+  make DESTDIR="${pkgdir}" install || return 1
+  rm -rf "${pkgdir}/opt/arch/share/info"
+}

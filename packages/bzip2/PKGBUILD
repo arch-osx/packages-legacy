@@ -1,0 +1,44 @@
+# PKGBUILD autocreated by ABStoOSX 0.2
+# $Id
+# ArchLinux Maintainer: Judd <jvinet@zeroflux.org>
+
+pkgname=bzip2
+pkgver=1.0.5
+pkgrel=3
+pkgdesc="A high-quality data compression program"
+arch=('macx86')
+license=('custom')
+url="http://sources.redhat.com/bzip2"
+groups=('base')
+depends=( )
+source=(http://www.bzip.org/$pkgver/bzip2-$pkgver.tar.gz
+        Makefile-libbz2_dylib)
+
+build() {
+  cd $startdir/src/$pkgname-$pkgver
+  cp $startdir/Makefile-libbz2_dylib .
+  mkdir -p $startdir/pkg/opt/arch/bin $startdir/pkg/opt/arch/share/man/man1
+  mkdir -p $startdir/pkg/opt/arch/include $startdir/pkg/opt/arch/lib
+  make -f Makefile-libbz2_dylib || return 1
+  make bzip2recover libbz2.a || return 1
+  ln -sf libbz2.1.0.4.dylib libbz2.dylib
+  ln -sf libbz2.1.0.4.dylib libbz2.1.dylib
+  cp bzip2-shared $startdir/pkg/opt/arch/bin/bzip2
+  cp bzip2recover $startdir/pkg/opt/arch/bin
+  cp bzip2.1 $startdir/pkg/opt/arch/share/man/man1
+  mkdir -p $startdir/pkg/opt/arch/include
+  cp bzlib.h $startdir/pkg/opt/arch/include
+  cp -a libbz2*.dylib $startdir/pkg/opt/arch/lib
+  cd $startdir/pkg/opt/arch/bin
+  ln -sf bzip2 bunzip2
+  ln -sf bzip2 bzcat
+  cd $startdir/pkg/opt/arch/share/man/man1
+  ln -sf bzip2.1 bunzip2.1
+  ln -sf bzip2.1 bzcat.1
+  ln -sf bzip2.1 bzip2recover.1
+
+  mkdir -p ${startdir}/pkg/opt/arch/share/licenses/${pkgname}
+  install -m644 ${startdir}/src/${pkgname}-${pkgver}/LICENSE ${startdir}/pkg/opt/arch/share/licenses/${pkgname}/LICENSE
+}
+md5sums=('3c15a0c8d1d3ee1c46a1634d00617b1a'
+         'a0354e35742a2e2e7a87799ea1b9ea2b')

@@ -1,0 +1,43 @@
+# PKGBUILD autocreated by ABStoOSX 0.2
+# $Id
+# ArchLinux Maintainer: Andreas Radke <andyrtr@archlinux.org>
+# Contributor: Tom Newsom <Jeepster@gmx.co.uk>
+
+pkgname=sqlite3
+pkgver=3.6.10
+pkgrel=1
+pkgdesc="A C library that implements an SQL database engine"
+arch=('macx86')
+license=('custom')
+url="http://www.sqlite.org/"
+depends=('readline')
+makedepends=('tcl')
+conflicts=('sqlite')
+replaces=('sqlite')
+source=(http://www.sqlite.org/sqlite-$pkgver.tar.gz
+	license.txt)
+options=(!libtool)
+md5sums=('a03bdc86df4025b6881d58557e4b5bd3'
+         'c1cdbc5544034d9012e421e75a5e4890')
+
+build() {
+  cd ${srcdir}/sqlite-${pkgver}
+  export LTLINK_EXTRAS="-ldl"
+  export CFLAGS="$CFLAGS -DSQLITE_ENABLE_FTS3=1 -DSQLITE_ENABLE_COLUMN_METADATA=1"
+  sed -e 's/tclsh8.4/tclsh8.5/g' -i~ configure
+  ./configure --prefix=/opt/arch --with-tcl=/opt/arch/lib \
+    --with-readline-lib=/opt/arch/lib/libreadline.dylib \
+    --with-readline-inc=/opt/arch/include/readline/readline.h \
+	--enable-threadsafe \
+	--disable-static \
+	--enable-load-extension || return 1
+  make || return 1
+  gcc -dynamiclib -install_name /opt/arch/lib/libtclsqlite3.dylib -Wl,-undefined -Wl,dynamic_lookup -o .libs/libtclsqlite3.dylib  .libs/tclsqlite.o   -L/opt/arch/lib ./.libs/libsqlite3.dylib -ltclstub8.5
+  make DESTDIR=${pkgdir} install || return 1
+  mkdir -p ${pkgdir}/opt/arch/share/man/man1
+  install -m0644 sqlite3.1 ${pkgdir}/opt/arch/share/man/man1/sqlite3.1
+
+  # license
+  mkdir -p ${pkgdir}/opt/arch/share/licenses/${pkgname}/
+  install -m644 ${srcdir}/license.txt ${pkgdir}/opt/arch/share/licenses/${pkgname}/license.txt
+}

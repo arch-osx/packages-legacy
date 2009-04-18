@@ -1,0 +1,183 @@
+diff -uNr ../namcap-2.2.orig/Namcap/depends.py ./Namcap/depends.py
+--- ../namcap-2.2.orig/Namcap/depends.py	2008-11-04 02:01:01.000000000 -0500
++++ ./Namcap/depends.py	2009-02-09 23:54:32.000000000 -0500
+@@ -115,7 +115,7 @@
+ 	# So we will strip off the matching part of the files and use this regexp to match the rest
+ 	so_end = re.compile('(\.\d+)*')
+ 
+-	pacmandb = '/var/lib/pacman/local'
++	pacmandb = '/opt/arch/var/lib/pacman/local'
+ 	for i in os.listdir(pacmandb):
+ 		if os.path.isfile(pacmandb+'/'+i+'/files'):
+ 			file = open(pacmandb+'/'+i+'/files')
+@@ -209,9 +209,9 @@
+ 				ret[2].append('File '+ str(files) +' link-level dependence on ' + i)
+ 
+ 		# Check for packages in testing
+-		if os.path.isdir('/var/lib/pacman/sync/testing'):
++		if os.path.isdir('/opt/arch/var/lib/pacman/sync/testing'):
+ 			for i in dependlist.keys():
+-				p = pacman.load(i, '/var/lib/pacman/sync/testing/')
++				p = pacman.load(i, '/opt/arch/var/lib/pacman/sync/testing/')
+ 				q = load(i)
+ 				if p != None and q != None and p.version == q.version:
+ 					ret[1].append('Dependency ' + i + ' on your system is a testing release')
+diff -uNr ../namcap-2.2.orig/Namcap/fileownership.py ./Namcap/fileownership.py
+--- ../namcap-2.2.orig/Namcap/fileownership.py	2008-11-04 02:01:01.000000000 -0500
++++ ./Namcap/fileownership.py	2009-02-09 23:57:47.000000000 -0500
+@@ -29,7 +29,7 @@
+ 	def analyze(self, pkginfo, tar):
+ 		ret = [[],[],[]]
+ 		for i in tar.getmembers():
+-			if i.uname != 'root' or i.gname != 'root':
++			if i.uname != 'root' or (i.gname != 'root' and i.gname != 'wheel'):
+ 				uname = ""
+ 				gname = ""
+ 				if i.uname == "":
+diff -uNr ../namcap-2.2.orig/Namcap/licensepkg.py ./Namcap/licensepkg.py
+--- ../namcap-2.2.orig/Namcap/licensepkg.py	2008-11-04 02:01:01.000000000 -0500
++++ ./Namcap/licensepkg.py	2009-02-09 23:54:32.000000000 -0500
+@@ -32,7 +32,7 @@
+ 		if not hasattr(pkginfo, 'license') or len(pkginfo.license) == 0:
+ 			ret[0].append('Missing license')
+ 		else:
+-			licensepaths = [x for x in tar.getnames() if x.startswith('usr/share/licenses') and not x.endswith('/')]
++			licensepaths = [x for x in tar.getnames() if x.startswith('opt/arch/share/licenses') and not x.endswith('/')]
+ 			licensedirs = [os.path.split(os.path.split(x)[0])[1] for x in licensepaths]
+ 			licensefiles = [os.path.split(x)[1] for x in licensepaths]
+ 			# Check all licenses for validity
+@@ -40,14 +40,14 @@
+ 				lowerlicense = license.lower()
+ 				if lowerlicense.startswith('custom') or lowerlicense in ("bsd", "mit", "isc", "python", "zlib", "libpng"):
+ 					if pkginfo.name not in licensedirs:
+-						ret[0].append('Missing custom license directory (usr/share/licenses/%s)' % pkginfo.name)
++						ret[0].append('Missing custom license directory (opt/arch/share/licenses/%s)' % pkginfo.name)
+ 					elif len(licensefiles) == 0:
+-						ret[0].append('Missing custom license file in package (usr/share/licenses/%s/*)' % pkginfo.name)
++						ret[0].append('Missing custom license file in package (opt/arch/share/licenses/%s/*)' % pkginfo.name)
+ 				# A common license
+ 				else:
+-					commonlicenses = [x.lower() for x in os.listdir('/usr/share/licenses/common')]
++					commonlicenses = [x.lower() for x in os.listdir('/opt/arch/share/licenses/common')]
+ 					if lowerlicense not in commonlicenses:
+-						ret[0].append("%s is not a common license (/usr/share/licenses/common/%s does not exist)" % (license, license))
++						ret[0].append("%s is not a common license (/opt/arch/share/licenses/common/%s does not exist)" % (license, license))
+ 		return ret
+ 	def type(self):
+ 		return "tarball"
+diff -uNr ../namcap-2.2.orig/pacman.py ./pacman.py
+--- ../namcap-2.2.orig/pacman.py	2008-11-04 02:01:01.000000000 -0500
++++ ./pacman.py	2009-02-09 23:54:32.000000000 -0500
+@@ -18,7 +18,7 @@
+ # 
+ 
+ import tarfile, os, os.path, re, subprocess
+-pacmandb = '/var/lib/pacman/local/'
++pacmandb = '/opt/arch/var/lib/pacman/local/'
+ 
+ class PacmanPackage(object):
+ 	strings = ['name', 'version', 'desc', 'url', 'builddate', 'packager', 'install', 'filename', 'csize', 'isize', ]
+@@ -93,7 +93,7 @@
+ 		if workingdir == '':
+ 			workingdir = None
+ 		filename = os.path.basename(package)
+-		process = subprocess.Popen(['/usr/bin/parsepkgbuild',filename], stdout=subprocess.PIPE, cwd=workingdir)
++		process = subprocess.Popen(['/opt/arch/bin/parsepkgbuild',filename], stdout=subprocess.PIPE, cwd=workingdir)
+ 		data = process.stdout.read()
+ 		ret = loaddb(None, data)
+ 
+diff -uNr ../namcap-2.2.orig/parsepkgbuild ./parsepkgbuild
+--- ../namcap-2.2.orig/parsepkgbuild	2008-11-04 02:01:01.000000000 -0500
++++ ./parsepkgbuild	2009-02-09 23:54:32.000000000 -0500
+@@ -2,7 +2,7 @@
+ 
+ mkdir -p /tmp/parsepkgbuild
+ 
+-source /etc/makepkg.conf
++source /opt/arch/etc/makepkg.conf
+ export CARCH
+ 
+ export PATH=/tmp/parsepkgbuild; exec /bin/bash --noprofile --norc -r << EOF
+diff -uNr ../namcap-2.2.orig/setup.py ./setup.py
+--- ../namcap-2.2.orig/setup.py	2008-11-04 02:01:01.000000000 -0500
++++ ./setup.py	2009-02-09 23:54:32.000000000 -0500
+@@ -1,7 +1,7 @@
+ #!/usr/bin/env python
+ from distutils.core import setup
+ 
+-DATAFILES = [('/usr/share/man/man1', ['namcap.1'])]
++DATAFILES = [('/opt/arch/share/man/man1', ['namcap.1'])]
+ 
+ setup(name="namcap",
+ 	version="2.0",
+--- namcap-2.2.orig/Namcap/fhsmanpages.py	2008-11-04 02:01:01.000000000 -0500
++++ Namcap/fhsmanpages.py	2009-02-10 00:02:54.000000000 -0500
+@@ -28,12 +28,12 @@
+ 	def prereq(self):
+ 		return "tar"
+ 	def analyze(self, pkginfo, tar):
+-		gooddir = 'usr/share/man'
+-		bad_dir = 'usr/man'
++		gooddir = 'opt/arch/share/man'
++		bad_dir = 'opt/arch/man'
+ 		ret = [[],[],[]]
+ 		for i in tar.getmembers():
+ 			if i.name.startswith(bad_dir):
+-				ret[0].append("Non-FHS man page (" + i.name + ") found. Use /usr/share/man instead")
++				ret[0].append("Non-FHS man page (" + i.name + ") found. Use /opt/arch/share/man instead")
+ 			elif not i.name.startswith(gooddir):
+ 				#Check everything else to see if it has a 'man' path component
+ 				for part in i.name.split(os.sep):
+--- ../namcap-2.2.orig/Namcap/directoryname.py	2008-11-04 02:01:01.000000000 -0500
++++ Namcap/directoryname.py	2009-02-10 00:06:09.000000000 -0500
+@@ -27,7 +27,7 @@
+ 	def prereq(self):
+ 		return "tar"
+ 	def analyze(self, pkginfo, tar):
+-		valid_paths = ['etc/', 'usr/bin/', 'usr/sbin/', 'usr/lib', 'usr/include/', 'usr/share/', 'opt/', '.PKGINFO', '.INSTALL', '.FILELIST', '._install', 'lib/', 'sbin/', 'srv/', 'var/lib/', 'var/opt/', 'var/spool/', 'var/lock/', 'var/state/', 'var/run/', 'var/log/', '.CHANGELOG']
++		valid_paths = ['.PKGINFO', '.INSTALL', '.FILELIST', '.CHANGELOG', '._install', 'opt/arch/']
+ 		ret = [[],[],[]]
+ 		for i in tar.getnames():
+ 			# Replace multiple /'s at the end of a string with a single /
+--- Namcap/depends.py.orig	2009-02-10 17:25:30.000000000 -0500
++++ Namcap/depends.py	2009-02-10 17:25:43.000000000 -0500
+@@ -16,7 +16,6 @@
+ #   along with this program; if not, write to the Free Software
+ #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ # 
+-
+ import re, os, os.path, pacman, subprocess
+ 
+ pkgcache = {}
+@@ -64,19 +63,18 @@
+ 	sharedlibs, scripts = data
+ 	for i in names:
+ 		if os.path.isfile(dirname+'/'+i):
+-			var = subprocess.Popen('readelf -d ' + dirname+'/'+i,
++			var = subprocess.Popen('otool -L ' + dirname+'/'+i,
+ 					shell=True,
+ 					stdout=subprocess.PIPE,
+ 					stderr=subprocess.PIPE).communicate()
+ 			for j in var[0].split('\n'):
+-				n = re.search('Shared library: \[(.*)\]', j)
++				n = re.search('\s+/(.*.dylib) \(compatibility version', j)
+ 				# Is this a Shared library: line?
+-				if n != None:
+-					# Find out its architecture
+-					architecture = figurebitsize(j)
++				if n != None :
+ 					try:
+-						libpath = os.path.abspath(libcache[architecture][n.group(1)])[1:]
+-						sharedlibs.setdefault(libpath, {})[dirname+'/'+i] = 1
++						libpath = n.group(1);
++						if (libpath != "usr/lib/libSystem.B.dylib") & (libpath != "usr/lib/libgcc_s.1.dylib"): 
++							sharedlibs.setdefault(libpath, {})[dirname+'/'+i] = 1
+ 					except KeyError:
+ 						# Ignore that library if we can't find it
+ 						# TODO: review it
+@@ -265,4 +263,4 @@
+ 		return ret
+ 	def type(self):
+ 		return "tarball"
+-# vim: set ts=4 sw=4 noet:
++# vim: set ts=4 sw=4 noet :

@@ -1,0 +1,28 @@
+# ArchOSX Maintainer: Kevin Barry <barryk gmail com>
+pkgname=libiconv
+pkgver=1.12
+pkgrel=2
+pkgdesc="Text encoding converter"
+arch=('macx86')
+url="http://www.gnu.org/software/libiconv/"
+license=('GPL')
+groups=()
+depends=()
+makedepends=()
+optdepends=()
+provides=()
+source=("http://ftp.gnu.org/pub/gnu/libiconv/${pkgname}-${pkgver}.tar.gz")
+md5sums=() #generate with 'makepkg -g'
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+
+  ./configure --prefix=/opt/arch
+  make || return 1
+  make DESTDIR="$pkgdir/" install
+  find ${pkgdir} -name \*.la -delete
+  # This file conflicts with coreutils
+  rm "$pkgdir/opt/arch/lib/charset.alias"
+}
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,16 @@
+--- unix/Makefile.in.orig	2009-02-09 18:32:51.000000000 -0500
++++ unix/Makefile.in	2009-02-09 18:33:01.000000000 -0500
+@@ -95,11 +95,11 @@
+ # The directory containing the Tcl sources and headers appropriate
+ # for this version of Tk ("srcdir" will be replaced or has already
+ # been replaced by the configure script):
+-TCL_GENERIC_DIR		= @TCL_SRC_DIR@/generic
++TCL_GENERIC_DIR		= @TCL_SRC_DIR@
+ 
+ # The directory containing the platform specific Tcl sources and headers
+ # appropriate for this version of Tk:
+-TCL_PLATFORM_DIR	= @TCL_SRC_DIR@/unix
++TCL_PLATFORM_DIR	= @TCL_SRC_DIR@
+ 
+ # The directory containing the Tcl library archive file appropriate
+ # for this version of Tk:

@@ -1,0 +1,26 @@
+# arg 1:  the new package version
+post_install() {
+	# we need to ldconfig first, in case xfree86's libs aren't
+	# in ld.so.cache yet
+	#sbin/ldconfig -r .
+	opt/arch/bin/pango-querymodules > opt/arch/etc/pango/pango.modules
+}
+
+# arg 1:  the new package version
+# arg 2:  the old package version
+post_upgrade() {
+	if [ -f opt/arch/etc/pango/pango.modules ]; then
+		rm opt/arch/etc/pango/pango.modules
+	fi
+	post_install $1
+}
+
+# arg 1:  the old package version
+pre_remove() {
+	rm opt/arch/etc/pango/pango.modules
+}
+
+op=$1
+shift
+
+$op $*

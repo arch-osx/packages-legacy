@@ -1,0 +1,33 @@
+# Package to provide dependencies from a Xcode
+# Note: This package will NOT install Xcode. It must be installed seperately.
+#       This is only to provide Archlinux style dependencies provided from Xcode
+# Maintainer: Kevin Barry <barryk gmail com>
+pkgname=macosx_xcode
+pkgver=3.1.2
+pkgrel=1
+pkgdesc="Host system. Empty package, provides dependencies."
+arch=('macx86' 'macppc')
+url="http://www.apple.com/macosx"
+license=("NA")
+groups=('base')
+
+provides=(
+      'autoconf=2.61'
+      'automake=2.61'
+      'bison=2.3'
+      'flex=2.5.33'
+      'gcc=4.0.1'
+      'libtool=1.5.22'    # GNU/Libtool installed as glibtool
+      'm4=1.4.6'
+      'make=3.81'
+      'nasm=0.98.40'
+)
+source=()
+noextract=()
+md5sums=() #generate with 'makepkg -g'
+
+build() {
+    true;
+}
+
+# vim:set ts=2 sw=2 et:

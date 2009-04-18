@@ -1,0 +1,87 @@
+# Contributer: Jason Chu <jason@archlinux.org>
+# Maintainer: Jason Chu <jason@archlinux.org>
+
+pkgname=subversion
+pkgver=1.5.5
+pkgrel=1
+pkgdesc="Replacement for CVS, another versioning system (svn)"
+arch=('macx86')
+license=('apache' 'bsd')
+depends=('neon>=0.28.2-2' 'apr-util>=1.3.2-2')
+makedepends=('heimdal>=1.2' 'db>=4.7')
+#             'apache>=2.2.9-3' 'autoconf'
+#             'python>=2.6-1'
+#             'perl>=5.10.0-3' 'swig>=1.3.31' 'ruby' 'openjdk6' 'autoconf')
+source=(http://svn.collab.net/tarballs/${pkgname}-${pkgver}.tar.gz
+        svn svnserve.conf)
+
+backup=('etc/xinetd.d/svn' 'etc/conf.d/svnserve')
+url="http://subversion.tigris.org/"
+provides=('svn')
+options=('!makeflags' 'libtool')
+
+build() {
+   cd $startdir/src/${pkgname}-${pkgver}
+
+#   [ -z "${J2REDIR}" ] && . /etc/profile.d/openjdk6.sh
+#   [ -z "${J2SDKDIR}" ] && . /etc/profile.d/openjdk6.sh
+
+   #patch -Np1 -i $startdir/src/subversion-neon.patch
+
+   #sed -e 's/\(NEON_ALLOWED_LIST=.* 0.26.4\)"/\1 0.27.2 0.28.0 0.28.1 0.28.2"/' -i configure.in
+
+#   libtoolize --force --copy
+#   aclocal -I build/ac-macros
+#   autoconf
+
+   autoreconf
+   ./configure --prefix=/opt/arch --with-apr=/opt/arch --with-apr-util=/opt/arch \
+               --with-zlib=/opt/arch --with-neon=/opt/arch
+#               --with-apxs
+#               --with-zlib=/opt/arch --with-neon=/opt/arch --with-apxs \
+#               --enable-javahl --with-jdk=/usr/lib/jvm/java-1.6.0-openjdk
+
+   (make external-all && make LT_LDFLAGS="-L$Fdestdir/opt/arch/lib" local-all ) || return 1
+
+   export LD_LIBRARY_PATH=$startdir/pkg/opt/arch/lib:$LD_LIBRARY_PATH
+   make DESTDIR=$startdir/pkg install || return 1
+
+#   make DESTDIR=$startdir/pkg swig-py || return 1
+#   make install-swig-py DESTDIR=$startdir/pkg || return 1
+#
+#   mkdir -p $startdir/pkg/opt/arch/lib/python2.6
+#   mv $startdir/pkg/opt/arch/lib/svn-python/ $startdir/pkg/opt/arch/lib/python2.6/site-packages
+#
+#   mkdir -p $startdir/pkg/opt/arch/share/subversion
+#   install -d -m 755 tools/hook-scripts $startdir/pkg/opt/arch/share/subversion/
+#   rm -f $startdir/pkg/opt/arch/share/subversion/hook-scripts/*.in
+#
+#   make DESTDIR=$startdir/pkg swig-pl || return 1
+#   make install-swig-pl DESTDIR=$startdir/pkg INSTALLDIRS=vendor || return 1
+#   rm -f $startdir/pkg/usr/lib/perl5/vendor_perl/auto/SVN/_Core/.packlist
+#   rm -rf $startdir/pkg/usr/lib/perl5/core_perl
+#
+#   make DESTDIR=$startdir/pkg swig-rb || return 1
+#   make install-swig-rb DESTDIR=$startdir/pkg  || return 1
+#
+#   make DESTDIR=$startdir/pkg javahl || return 1
+#   make DESTDIR=$startdir/pkg install-javahl || return 1
+
+#   mkdir -p $startdir/pkg/etc/rc.d
+#   mkdir -p $startdir/pkg/etc/xinetd.d
+#   mkdir -p $startdir/pkg/etc/conf.d
+#
+#   install -m 755 $startdir/src/svnserve $startdir/pkg/etc/rc.d
+#   install -m 644 $startdir/src/svn $startdir/pkg/etc/xinetd.d
+#   install -m 644 $startdir/src/svnserve.conf $startdir/pkg/etc/conf.d/svnserve
+   install -m 755 $startdir/src/subversion-$pkgver/contrib/client-side/svnmerge/svnmerge.py $startdir/pkg/opt/arch/bin/svnmerge
+   install -D -m 644 $startdir/src/subversion-$pkgver/COPYING $startdir/pkg/opt/arch/share/licenses/$pkgname/LICENSE
+
+   #libtoolslay not all because of kdesdk
+#   find ${startdir}/pkg/usr/lib/httpd/modules -name '*.la' -exec rm {} \;
+#   find ${startdir}/pkg/usr/lib/ruby -name '*.la' -exec rm {} \;
+#   find ${startdir}/pkg/usr/lib/python2.6 -name '*.la' -exec rm {} \;
+}
+md5sums=('532c7d49b3cd33d712289a5ef03b7749'
+         'a0db6dd43af33952739b6ec089852630'
+         'c459e299192552f61578f3438abf0664')

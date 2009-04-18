@@ -1,0 +1,33 @@
+# ArchOSX Maintainer: Kevin Barry <barryk gmail com
+pkgname=stage2
+pkgver=2.1.1
+pkgrel=1
+pkgdesc="Robotic systems environment"
+arch=('macx86')
+url="http://playerstage.sf.net"
+license=('GPL')
+groups=('playerstage')
+depends=('gtk2' 'player')
+makedepends=()
+provides=()
+conflicts=()
+replaces=()
+backup=()
+options=()
+install=
+source=(http://dl.sourceforge.net/sourceforge/playerstage/stage-${pkgver}.tar.bz2)
+md5sums=(bae4c8fc7866bce4dacc3f673921f269)
+noextract=()
+
+build() {
+  cd "$startdir/src/stage-$pkgver"
+
+  ./configure --prefix=/opt/arch
+  make -j1 || return 1
+  make DESTDIR="$startdir/pkg" install
+  find ${pkgdir} -name \*.la -delete
+  ln -s libstageplugin.dylib ${pkgdir}/opt/arch/lib/libstageplugin.so
+}
+
+# vim:set ts=2 sw=2 et:
+

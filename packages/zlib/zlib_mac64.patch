@@ -1,0 +1,20 @@
+--- zlib.h.orig	2007-06-19 06:26:15.000000000 -0400
++++ zlib.h	2009-02-08 20:53:13.000000000 -0500
+@@ -1361,7 +1361,7 @@
+         inflateBackInit_((strm), (windowBits), (window), \
+                                             ZLIB_VERSION, sizeof(z_stream))
+ 
+-#ifdef _LARGEFILE64_SOURCE
++#if !defined(__APPLE__) && defined(_LARGEFILE64_SOURCE)
+    ZEXTERN gzFile ZEXPORT gzopen64 OF((const char *, const char *));
+    ZEXTERN off64_t ZEXPORT gzseek64 OF((gzFile, off64_t, int));
+    ZEXTERN off64_t ZEXPORT gztell64 OF((gzFile));
+@@ -1369,7 +1369,7 @@
+    ZEXTERN uLong ZEXPORT crc32_combine64 OF((uLong, uLong, off64_t));
+ #endif
+ 
+-#if _FILE_OFFSET_BITS == 64
++#if !defined(__APPLE__) && (_FILE_OFFSET_BITS == 64)
+ #  define gzopen gzopen64
+ #  define gzseek gzseek64
+ #  define gztell gztell64

@@ -1,0 +1,22 @@
+# Contributor: Tom Wambold <tom5760@gmail.com>
+pkgname=bindfs
+pkgver=1.8.2
+pkgrel=1
+pkgdesc="FUSE filesystem for mirroring a directory similar to mount -o bind"
+arch=('macx86')
+url="http://bindfs.googlecode.com/"
+license=('GPL')
+depends=('macfuse')
+source=(http://bindfs.googlecode.com/files/bindfs-$pkgver.tar.gz)
+md5sums=('e53d5449e010a79305fdb72f0edcf3a2')
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+
+  export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
+  ./configure --prefix=/opt/arch
+  make || return 1
+  make DESTDIR="$pkgdir/" install
+}
+
+# vim:set ts=2 sw=2 et:

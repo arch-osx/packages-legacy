@@ -1,0 +1,27 @@
+# $Id$
+# Maintainer: Andreas Radke <andyrtr@archlinux.org>
+# Contributor: Jochem Kossen <j.kossen@home.nl>
+
+pkgname=fakeroot
+pkgver=1.12.1
+pkgrel=2
+pkgdesc="Gives a fake root environment, useful for building packages as a non-privileged user"
+arch=('macx86')
+license=('GPL')
+url="http://packages.debian.org/fakeroot"
+groups=('base-devel')
+depends=()
+options=('!libtool')
+source=(http://ftp.debian.org/debian/pool/main/f/$pkgname/${pkgname}_${pkgver}.tar.gz
+        fakeroot_mac.diff)
+md5sums=('87970d6784f536cde84f9bcbaaa52720'
+         '6f9c9bdb51d97bdfd26cfe118be6fd9a')
+
+build() {
+  cd $startdir/src/$pkgname-$pkgver
+  patch -p0 < $startdir/fakeroot_mac.diff
+  ./configure --prefix=/opt/arch --libdir=/opt/arch/lib/libfakeroot --disable-static
+  make || return 1
+  make DESTDIR=$startdir/pkg install
+}
+

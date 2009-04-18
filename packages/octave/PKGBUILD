@@ -1,0 +1,49 @@
+# PKGBUILD autocreated by ABStoOSX 0.2
+# $Id
+# ArchLinux Maintainer: Ronald van Haren <ronald.archlinux.org>
+# Contributor : shining <shiningxc.at.gmail.com>
+# Contributor : cyberdune <cyberdune@gmail.com>
+
+pkgname=octave
+pkgver=3.0.3
+pkgrel=1
+pkgdesc="A high-level language, primarily intended for numerical computations."
+arch=('macx86')
+url="http://www.octave.org"
+license=('GPL')
+depends=('fftw' 'pcre' 'curl')
+makedepends=('sed' 'fortran77' 'bison')
+makedepends=('texinfo')
+optdepends=('texinfo: for help-support in octave'
+            'gnuplot: to be able to plot in octave'
+            'aquaterm: Plots are more beautiful/Mac like')
+provides=(octave3)
+conflicts=(octave3)
+replaces=(octave3)
+source=("ftp://ftp.octave.org/pub/octave/octave-$pkgver.tar.bz2"
+        'f77_o_before_filename.patch')
+options=('!emptydirs')
+install=octave.install
+md5sums=('38d258d60242cf4844e3c4350691ccff')
+
+build() {
+  cd "$srcdir/octave-$pkgver"
+
+  ./autogen.sh
+  patch -p0 < ${startdir}/f77_o_before_filename.patch
+  # http://www.nabble.com/Random-rounding-errors-td16010966.html
+  #FFLAGS="-O -ffloat-store" \
+  FLIBS="-lf2c" FFLAGS="-O1" \
+  ./configure --prefix=/opt/arch --libexecdir=/opt/arch/lib \
+  --without-hdf5 --without-umfpack
+
+  make || return 1
+  make DESTDIR="$pkgdir" install || return 1
+
+  mv ${pkgdir}/opt/arch/bin/octave ${pkgdir}/opt/arch/bin/octave-bin
+  install -m755 ${startdir}/octave_launcher.sh ${pkgdir}/opt/arch/bin/octave
+  cd $pkgdir/opt/arch/share/info
+  rm -f dir
+  gzip * || return 1
+}
+

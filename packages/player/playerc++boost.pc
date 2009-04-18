@@ -1,0 +1,10 @@
+prefix=/opt/arch
+
+# this gives access to the player header files for compiling plugins
+
+Name: playerc++
+Description: C++ wrapper for libplayerc with Boost
+Version: 2.1.2
+Requires: playerxdr playerc
+Libs: -L${prefix}/lib -lplayerc++ -lm -lboost_signals -lboost_thread-mt
+Cflags: -I${prefix}/include/player-2.1  -D_POSIX_PTHREAD_SEMANTICS -D_REENTRANT

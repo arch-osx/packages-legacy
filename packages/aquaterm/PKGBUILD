@@ -1,0 +1,39 @@
+# ArchOSX Maintainer: Kevin Barry <barryk gmail com>
+pkgname=aquaterm
+pkgver=1.0.1
+pkgrel=1
+pkgdesc="Mac plotting front end (Graphics terminal)"
+arch=('macx86')
+url="http://aquaterm.sourceforge.net/"
+group=('outside') # Installs to /Applications/Aquaterm.app
+license=('custom')
+depends=()
+source=(http://downloads.sourceforge.net/aquaterm/aquaterm_src.${pkgver}.tar.gz
+        disable_universal_binaries.patch
+        increase_max_win_size.patch)
+
+build() {
+  cd ${srcdir}/aquaterm
+  install -d -m775 ${pkgdir}/Applications
+  install -d -m755 ${pkgdir}/opt/arch/Frameworks
+
+  rm -rf build
+
+  patch -p0 < ${startdir}/disable_universal_binaries.patch
+  patch -p0 < ${startdir}/increase_max_win_size.patch
+  xcodebuild -target AquaTerm  -configuration Deployment
+  echo ""
+  echo ""
+  echo "Ignore any warning above about Help/help.html"
+  echo ""
+  echo ""
+    # xcodebuild almost always fails on this command for some reason...
+  /Developer/Library/PrivateFrameworks/DevToolsCore.framework/Resources/pbxcp -exclude .DS_Store -exclude CVS -exclude .svn -strip-debug-symbols -resolve-src-symlinks ${srcdir}/aquaterm/Help/help.html ${srcdir}/aquaterm/build/Deployment/AquaTerm.app/Contents/Resources
+
+  cp -R ${srcdir}/aquaterm/build/Deployment/AquaTerm.app ${pkgdir}/Applications
+  cp -R ${srcdir}/aquaterm/build/Deployment/AquaTerm.framework ${pkgdir}/opt/arch/Frameworks
+  chown -R root.0 ${pkgdir}
+  
+}
+
+# vim:set ts=2 sw=2 et:

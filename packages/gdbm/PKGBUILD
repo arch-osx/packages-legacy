@@ -1,0 +1,33 @@
+# PKGBUILD autocreated by ABStoOSX 0.2
+# $Id
+# ArchLinux Maintainer: judd <jvinet@zeroflux.org>
+pkgname=gdbm
+pkgver=1.8.3
+pkgrel=5
+pkgdesc="GNU database library"
+url="http://www.gnu.org/software/gdbm/gdbm.html"
+license=('GPL')
+arch=('macx86')
+groups=('base')
+depends=( )
+source=(ftp://ftp.gnu.org/gnu/gdbm/$pkgname-$pkgver.tar.gz
+        binowner.patch)
+md5sums=('1d1b1d5c0245b1c00aff92da751e9aa1'
+         'ea485b3b30a370b4f2bb962f6f3c3537')
+
+build() {
+  cd $startdir/src/$pkgname-$pkgver
+  patch -p0 < $startdir/binowner.patch
+  ./configure --prefix=/opt/arch
+  make prefix=/opt/arch || return 1
+  make prefix=$startdir/pkg/opt/arch install
+  make prefix=$startdir/pkg/opt/arch install-compat
+
+  mkdir -p $startdir/pkg/opt/arch/share
+
+  chown root.0 $startdir/pkg/opt/arch/include/{dbm.h,gdbm.h,ndbm.h}
+  mv $startdir/pkg/opt/arch/man $startdir/pkg/opt/arch/share/man
+  chown root.0 $startdir/pkg/opt/arch/share/man/man3/gdbm.3
+  mv $startdir/pkg/opt/arch/man $startdir/pkg/opt/arch/share/man
+  find $startdir/pkg -name '*.la' -exec rm {} \;
+}

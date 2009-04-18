@@ -1,0 +1,12 @@
+Install the macosx package first. This is a dummy (empty) package but provides
+dependencies from the Mac OS X host system. This means we can still use packages
+that depend on things like bash or openssl.
+
+We need to write bootstrap instructions.
+
+Adding Packages
+---------------
+
+* cd packages
+* svn mkdir <PACKAGE NAME>
+* svn propset svn:ignore -F .svnignore <PACKAGE NAME>

@@ -1,0 +1,36 @@
+# ArchOSX Maintainer: Kevin Barry <barryk gmail com>
+# ArchLinux Maintainer: Jan de Groot <jgc@archlinux.org>
+# Contributor: Baptiste Daroussin <baptiste.daroussin@gmail.com>
+# Contributor: Grigorios Bouzakis <grbzks[at]gmail[dot]com>
+# Contributor: mightyjaym <jm.ambrosino@free.fr>
+
+pkgname=giflib
+pkgver=4.1.6
+pkgrel=3
+pkgdesc="A library for reading and writing gif images"
+url="http://sourceforge.net/projects/giflib/"
+arch=('macx86')
+license=('MIT')
+depends=()
+provides=("libungif=${pkgver}")
+conflicts=('libungif')
+replaces=('libungif')
+options=('!libtool')
+source=(http://downloads.sourceforge.net/sourceforge/giflib/${pkgname}-${pkgver}.tar.bz2)
+md5sums=('7125644155ae6ad33dbc9fc15a14735f')
+
+build() {
+  cd ${srcdir}/${pkgname}-${pkgver}
+  ./configure --prefix=/opt/arch || return 1
+  make || return 1
+  make DESTDIR=${pkgdir} install || return 1
+  install -m755 -d ${pkgdir}/opt/arch/share/licenses/${pkgname}
+  install -m644 COPYING ${pkgdir}/opt/arch/share/licenses/${pkgname}/ || return 1
+
+  # libungif compatibility - instructions taken from Redhat specfile
+  #MAJOR=`echo ${pkgver} | sed 's/\([0-9]\+\)\..*/\1/'`
+  #gcc -shared -Wl,-soname,libungif.dylib.${MAJOR} -Llib/.libs -lgif -o libungif.dylib.${pkgver} || return 1
+  #install -m755 libungif.dylib.${pkgver} ${pkgdir}/opt/arch/lib/ || return 1
+  #ln -sf libungif.dylib.${pkgver} ${pkgdir}/opt/arch/lib/libungif.dylib.4 || return 1
+  #ln -sf libungif.dylib.4 ${pkgdir}/opt/arch/lib/libungif.dylib || return 1
+}

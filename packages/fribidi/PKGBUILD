@@ -1,0 +1,24 @@
+# PKGBUILD autocreated by ABStoOSX 0.2
+# $Id
+# ArchLinux Maintainer: Travis Willard <travis@archlinux.org>
+# Committer: Judd Vinet <jvinet@zeroflux.org>
+
+pkgname=fribidi
+pkgver=0.10.9
+pkgrel=1
+pkgdesc="A Free Implementation of the Unicode Bidirectional Algorithm"
+arch=('macx86')
+license=('LGPL')
+url="http://fribidi.org"
+depends=( )
+options=('!libtool')
+source=(http://fribidi.org/download/fribidi-${pkgver}.tar.gz)
+md5sums=('647aee89079b056269ff0918dc1c6d28')
+
+build() {
+  cd ${startdir}/src/${pkgname}-${pkgver}
+  ./configure --prefix=/opt/arch
+  make || return 1
+  make DESTDIR=${startdir}/pkg install
+}
+
