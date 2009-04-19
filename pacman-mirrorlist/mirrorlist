@@ -2,4 +2,4 @@
 # Arch-OSX repository mirrorlist
 #
 
-# We don't have any mirrors yet!!!
+Server = http://twilightlair.net/files/arch/osx
