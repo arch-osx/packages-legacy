@@ -4,7 +4,7 @@
 
 pkgname=pacman
 pkgver=3.2.2
-pkgrel=5
+pkgrel=6
 pkgdesc="A library-based package manager with dependency support"
 arch=('macx86')
 url="http://www.archlinux.org/pacman/"
