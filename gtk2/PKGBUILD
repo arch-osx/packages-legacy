@@ -8,7 +8,7 @@ pkgdesc="The GTK+ Toolkit (v2)"
 arch=('macx86')
 url="http://www.gtk.org/"
 install=gtk2.install
-depends=('atk>=1.24.0' 'pango>=1.22.4' 'zlib' )
+depends=('atk>=1.24.0' 'libtiff' 'pango>=1.22.4' 'zlib' )
 makedepends=('pkgconfig')
 replaces=('gtkprint-cups' 'gail')
 conflicts=('gtkprint-cups' 'gail')
