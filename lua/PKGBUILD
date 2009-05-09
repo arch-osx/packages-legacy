@@ -1,0 +1,22 @@
+# Maintainer: Tom Wambold <tom5760@gmail.com>
+# Maintainer: Juergen Hoetzel <juergen@archlinux.org>
+# Contributor: Damir Perisa <damir.perisa@bluewin.ch>
+pkgname=lua 
+pkgver=5.1.4
+pkgrel=1
+pkgdesc="A powerful light-weight programming language designed for extending applications." 
+arch=('macx86')
+url="http://www.lua.org/" 
+depends=('readline' 'ncurses') 
+license=(MIT)
+options=('!makeflags')
+source=($url/ftp/$pkgname-$pkgver.tar.gz)
+md5sums=('d0870f2de55d59c1c8419f36e8fac150')
+
+build() { 
+    cd $startdir/src/$pkgname-$pkgver 
+    make INSTALL_TOP=$pkgdir/opt/arch macosx install
+    install -D -m 644 etc/lua.pc $startdir/pkg/opt/arch/lib/pkgconfig/lua.pc
+    install -D -m644 COPYRIGHT $startdir/pkg/opt/arch/share/licenses/$pkgname/COPYRIGHT
+}
+# vim: ts=2 sw=2 et ft=sh
