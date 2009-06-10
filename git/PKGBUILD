@@ -4,7 +4,7 @@
 
 pkgname=git
 pkgver=1.6.1.2
-pkgrel=1
+pkgrel=2
 pkgdesc="GIT - the stupid content tracker"
 arch=('macx86')
 url="http://git.or.cz/"
