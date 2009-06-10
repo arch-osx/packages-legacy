@@ -8,9 +8,9 @@ pkgrel=3
 pkgdesc="TeX Live binaries"
 license=('GPL')
 arch=('macx86')
-depends=('gcc-libs' 't1lib' 'gd' 'libsigsegv')
+depends=('t1lib' 'gd' 'libsigsegv')
 optdepends=('psutils' 't1utils' 'perl')
-makedepends=('clisp' 'ffcall' 'lzma-utils')
+makedepends=('clisp' 'ffcall' 'lzma-utils' 'ed')
 conflicts=('texlive-omega')
 options=('!makeflags' '!libtool')
 url='http://tug.org/texlive/'
@@ -28,7 +28,7 @@ backup=(/opt/arch/share/texmf/web2c/texmf.cnf \
 	/opt/arch/share/texmf-config/dvipdfm/config/config \
 	/opt/arch/share/texmf-config/xdvi/XDvi)
     
-md5sums=('2631ec5100be7d075a67000f45c3f9ee'
+md5sums=('e7c348d73f180a31755dd052d623fda6'
          '554287c3e458da776edd684506048d45'
          'bac8aee05595fb80fcae8e864ba063f6')
 
