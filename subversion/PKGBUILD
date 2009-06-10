@@ -3,12 +3,12 @@
 
 pkgname=subversion
 pkgver=1.5.5
-pkgrel=1
+pkgrel=2
 pkgdesc="Replacement for CVS, another versioning system (svn)"
 arch=('macx86')
 license=('apache' 'bsd')
 depends=('neon>=0.28.2-2' 'apr-util>=1.3.2-2')
-makedepends=('heimdal>=1.2' 'db>=4.7')
+makedepends=('heimdal>=1.2' 'db>=4.7' 'perl>=5.10.0-3' 'swig>=1.3.31')
 #             'apache>=2.2.9-3' 'autoconf'
 #             'python>=2.6-1'
 #             'perl>=5.10.0-3' 'swig>=1.3.31' 'ruby' 'openjdk6' 'autoconf')
@@ -56,10 +56,10 @@ build() {
 #   install -d -m 755 tools/hook-scripts $startdir/pkg/opt/arch/share/subversion/
 #   rm -f $startdir/pkg/opt/arch/share/subversion/hook-scripts/*.in
 #
-#   make DESTDIR=$startdir/pkg swig-pl || return 1
-#   make install-swig-pl DESTDIR=$startdir/pkg INSTALLDIRS=vendor || return 1
-#   rm -f $startdir/pkg/usr/lib/perl5/vendor_perl/auto/SVN/_Core/.packlist
-#   rm -rf $startdir/pkg/usr/lib/perl5/core_perl
+   make DESTDIR=$startdir/pkg swig-pl || return 1
+   make install-swig-pl DESTDIR=$startdir/pkg INSTALLDIRS=vendor || return 1
+   rm -f $startdir/pkg/opt/arch/lib/perl5/vendor_perl/auto/SVN/_Core/.packlist
+   rm -rf $startdir/pkg/opt/arch/lib/perl5/core_perl
 #
 #   make DESTDIR=$startdir/pkg swig-rb || return 1
 #   make install-swig-rb DESTDIR=$startdir/pkg  || return 1
