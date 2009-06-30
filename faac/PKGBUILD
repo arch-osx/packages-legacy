@@ -9,7 +9,6 @@ arch=('macx86')
 url="http://www.audiocoding.com/"
 license=('GPL' 'custom')
 depends=('libmp4v2' )
-makedepends=('automake' 'autoconf' 'libtool')
 options=('!libtool')
 source=(http://downloads.sourceforge.net/sourceforge/${pkgname}/${pkgname}-${pkgver}.tar.gz)
 
