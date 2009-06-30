@@ -2,15 +2,16 @@
 # Contributor: damir <damir archlinux.org>
 
 pkgname=x264
-pkgver=20090216
+pkgver=20090416
 pkgrel=1
 pkgdesc="free library for encoding H264/AVC video streams"
 arch=('macx86')
 url="http://www.videolan.org/developers/x264.html"
 license=('GPL')
-depends=('libx11')
 makedepends=('yasm')
 source=(ftp://ftp.videolan.org/pub/videolan/x264/snapshots/x264-snapshot-$pkgver-2245.tar.bz2)
+    
+md5sums=('f5730feaa6175539e8227e48e38b7d67')
 
 build() {
     cd "$srcdir/$pkgname-snapshot-$pkgver-2245" || return 1
