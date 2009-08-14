@@ -22,27 +22,27 @@ source=(ftp://ftp.archlinux.org/other/pacman/$pkgname-$pkgver.tar.gz
         makepkg.conf
         repo_add_sedspaces.patch
             # Patch repo-add to work wtih BSD/sed or GNU/sed
-        stat_full_path.patch
-            # Patch to use full path of stat in case user has coreutils
-        makepkg_sed.patch
-            # Patch makepkg to work with BSD/sed or GNU/sed
         )
+md5sums=('945b95633cc7340efb4d4564b463c6b1'
+         'b99de01a0c278b3b1b96556b34c8fde3'
+         '64e35f245d31434a44d6b504dd086564'
+         'dbf562b233c49d17c1467b22a901da4c')
 
 build() {
   cd $srcdir/$pkgname-$pkgver
   
-  patch -p0 < $startdir/stat_full_path.patch
+  #patch -p0 < $startdir/stat_full_path.patch
   patch -p0 < $startdir/repo_add_sedspaces.patch
-  patch -p0 < $startdir/makepkg_sed.patch
+  #patch -p0 < $startdir/makepkg_sed.patch
   sed -i~ -e 's/--strip-debug/-S/' scripts/makepkg.sh.in # Work with Mac's strip
-  ./configure --prefix=/opt/arch
+  ./configure --prefix=/opt/arch || return 1
   make || return 1
   make DESTDIR=$pkgdir install || return 1
 
   # install Arch specific stuff
-  mkdir -p $pkgdir/etc
-  install -m644 $srcdir/pacman.conf $pkgdir/etc/
-  install -m644 $srcdir/makepkg.conf $pkgdir/etc/
+  mkdir -p $pkgdir/opt/arch/etc
+  install -m644 $srcdir/pacman.conf $pkgdir/opt/arch/etc/
+  install -m644 $srcdir/makepkg.conf $pkgdir/opt/arch/etc/
   # set things correctly in the default conf file
   case "$CARCH" in
     i686)
@@ -55,11 +55,17 @@ build() {
       mychost="x86_64-unknown-linux-gnu"
       myflags="-march=x86-64 "
       ;;
+     macx86)
+      mycarch="macx86"
+      mychost="i386-apple-darwin9.6.0"
+      myflags="-march=i686 -mtune=generic -msse -msse2 -O2 -pipe -I/opt/arch/include"
   esac
-  sed -i $pkgdir/etc/makepkg.conf \
+  sed -i~ $pkgdir/opt/arch/etc/makepkg.conf \
     -e "s|@CARCH[@]|$mycarch|g" \
     -e "s|@CHOST[@]|$mychost|g" \
-    -e "s|@CARCHFLAGS[@]|$myflags|g"
+    -e "s|@CARCHFLAGS[@]|$myflags|g" &&
+    rm $pkgdir/opt/arch/etc/makepkg.conf~
+
 
   # install completion files
   mkdir -p $pkgdir/opt/arch/etc/bash_completion.d/
