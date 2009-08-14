@@ -1,0 +1,24 @@
+# Maintainer: Kevin Barry <barryk gmail com>
+pkgname=ntfs-3g
+pkgver=2009.4.4
+pkgrel=1
+pkgdesc="Read/write NTFS volumes using FUSE"
+arch=("macx86")
+url="http://macntfs-3g.blogspot.com/"
+license=('gpl2')
+depends=('macfuse')
+source=("http://downloads.sourceforge.net/catacombae/NTFS-3G_${pkgver}-catacombae.dmg")
+noextract=("NTFS-3G_${pkgver}-catacombae.dmg")
+md5sums=('8d6e9425bd7ceb721651c905196e3045')
+
+build() {
+  cd "$srcdir/"
+  hdiutil attach NTFS-3G_${pkgver}-catacombae.dmg -mountpoint $srcdir/ntfs-3g
+  cd "$pkgdir/"
+  gunzip -c "$srcdir/ntfs-3g/Install NTFS-3G.mpkg/Contents/Packages/NTFS-3G.pkg/Contents/Archive.pax.gz" \
+    | pax -r
+  hdiutil detach $srcdir/ntfs-3g
+
+}
+
+# vim:set ts=2 sw=2 et:
