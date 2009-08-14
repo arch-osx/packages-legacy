@@ -4,18 +4,20 @@
 
 pkgname=texlive-bin
 pkgver=2008
-pkgrel=3
+pkgrel=4
 pkgdesc="TeX Live binaries"
 license=('GPL')
 arch=('macx86')
-depends=('gcc-libs' 't1lib' 'gd' 'libsigsegv')
+depends=('t1lib' 'gd' 'libsigsegv')
 optdepends=('psutils' 't1utils' 'perl')
-makedepends=('clisp' 'ffcall' 'lzma-utils')
+makedepends=('clisp' 'ffcall' 'lzma-utils' 'ed')
 conflicts=('texlive-omega')
 options=('!makeflags' '!libtool')
 url='http://tug.org/texlive/'
 source=('texmf.cnf' 'ftp://tug.org/texlive/historic/2008/texlive-20080816-source.tar.lzma' \
 	'ftp://ftp.archlinux.org/other/texlive/texlive-bin-2008-texmf.tar.lzma')
+md5sums=('e7c348d73f180a31755dd052d623fda6' '554287c3e458da776edd684506048d45'\
+         'bac8aee05595fb80fcae8e864ba063f6')
 backup=(/opt/arch/share/texmf/web2c/texmf.cnf \
 	/opt/arch/share/texmf-config/web2c/mktex.cnf \
 	/opt/arch/share/texmf-config/web2c/updmap.cfg \
@@ -27,11 +29,6 @@ backup=(/opt/arch/share/texmf/web2c/texmf.cnf \
 	/opt/arch/share/texmf-config/dvipdfm/dvipdfmx.cfg \
 	/opt/arch/share/texmf-config/dvipdfm/config/config \
 	/opt/arch/share/texmf-config/xdvi/XDvi)
-    
-md5sums=('2631ec5100be7d075a67000f45c3f9ee'
-         '554287c3e458da776edd684506048d45'
-         'bac8aee05595fb80fcae8e864ba063f6')
-
 build() {
    cd $srcdir
    if [ "${CARCH}" = "x86_64" ]; then
@@ -47,6 +44,8 @@ build() {
    # This trick is for avoiding exiting when latex is not available, 
    # since we do not build the xindy documentation anyway:
    sed -i~ 's|latex="no"|latex="yes"|' utils/xindy/configure || return 1
+   ## prevent compiling Xdvi with libXp
+   sed -i~ 's|-lXp -Xext|-lXext|' texk/xdvik/configure
    test ! -d Work && mkdir Work
    cd Work
    echo "--> Here we go with configure..."
@@ -63,9 +62,9 @@ build() {
 	--with-xdvi-x-toolkit=xaw --with-cxx-runtime-hack \
         --without-omega --without-aleph --without-graphite || return 1
    ### fixes for xindy 
-   find utils/xindy -name Makefile -exec sed -i~ -e "s|^prefix =.\+$|prefix = $pkgdir/opt/arch|" '{}' \; || return 1
+   find utils/xindy -name Makefile -exec sed -i -e "s|^prefix =.\+$|prefix = $pkgdir/opt/arch|" '{}' \; || return 1
    ### we skip that, coz it requires an almost full texlive installation for compilation of the documentation:
-   sed -i~ -e "s|^MAKE_RULES = make-rules|MAKE_RULES = ''|" -e "s|^DOCS = doc|DOCS = ''|" utils/xindy/Makefile || return 1
+   sed -i -e "s|^MAKE_RULES = make-rules|MAKE_RULES = ''|" -e "s|^DOCS = doc|DOCS = ''|" utils/xindy/Makefile || return 1
    #############################################################
    echo "-------------------------------------------------------"
    echo "--> ... and now we build the whole beast"
@@ -140,8 +139,7 @@ build() {
    rm -f $pkgdir/opt/arch/share/texmf/web2c/texmf.cnf
    install -m644 $srcdir/texmf.cnf $pkgdir/opt/arch/share/texmf/web2c/texmf.cnf
    ## remove omega and aleph from fmtutil.cnf
-   sed -i~ -e '/omega/d' -e '/aleph/d' $pkgdir/opt/arch/share/texmf/web2c/fmtutil.cnf || return 1
-   rm ${pkgdir}/opt/arch/share/texmf/web2c/fmtutils.cnf~
+   sed -i -e '/omega/d' -e '/aleph/d' $pkgdir/opt/arch/share/texmf/web2c/fmtutil.cnf || return 1
    ###################################################################
    # copy config files to texmf-config tree
    install -d -m755 $pkgdir/opt/arch/share/texmf-config/web2c
@@ -169,12 +167,10 @@ build() {
    cp -a $pkgdir/opt/arch/share/texmf/xdvi/XDvi \
    	$pkgdir/opt/arch/share/texmf-config/xdvi/
    # clean updmap.cfg
-   sed -i~ '/^\(Map\|MixedMap\)/d' $pkgdir/opt/arch/share/texmf-config/web2c/updmap.cfg
-   sed -i~ '/^#! \(Map\|MixedMap\)/d' $pkgdir/opt/arch/share/texmf-config/web2c/updmap.cfg
-   rm ${pkgdir}/opt/arch/share/texmf-config/web2c/updmap.cfg~
+   sed -i '/^\(Map\|MixedMap\)/d' $pkgdir/opt/arch/share/texmf-config/web2c/updmap.cfg
+   sed -i '/^#! \(Map\|MixedMap\)/d' $pkgdir/opt/arch/share/texmf-config/web2c/updmap.cfg
    # fix hard-coded paths in /opt/arch/bin/xindy
-   sed -i~ "s|'/.\+/pkg/opt/arch|'/opt/arch|" $pkgdir/opt/arch/bin/xindy
-   rm ${pkgdir}/opt/arch/bin/xindy~
+   sed -i "s|'/.\+/pkg/opt/arch|'/opt/arch|" $pkgdir/opt/arch/bin/xindy
    # move xindy modules to /opt/arch/share/xindy
    rm -rf $pkgdir/opt/arch/share/xindy
    mv $pkgdir/opt/arch/share/texmf/xindy $pkgdir/opt/arch/share/
