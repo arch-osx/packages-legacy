@@ -6,27 +6,36 @@ pkgname=pacman
 pkgver=3.3.0
 pkgrel=3
 pkgdesc="A library-based package manager with dependency support"
-arch=('i686' 'x86_64')
+arch=('macx86')
 url="http://www.archlinux.org/pacman/"
 license=('GPL')
 groups=('base')
-depends=('bash' 'libarchive>=2.7.0-2' 'libfetch>=2.20' 'pacman-mirrorlist')
+depends=('libarchive>=2.7.0-2' 'libfetch>=2.20' 'pacman-mirrorlist' 'gettext')
 optdepends=('fakeroot: for makepkg usage as normal user'
-            'python: for rankmirrors script usage')
-backup=(etc/pacman.conf etc/makepkg.conf)
+            'python: for rankmirrors script usage'
+            'coreutils: for repo-add')
+backup=(opt/arch/etc/pacman.conf opt/arch/etc/makepkg.conf opt/arch/etc/pacman.d/mirrorlist)
 install=pacman.install
 options=(!libtool)
 source=(ftp://ftp.archlinux.org/other/pacman/$pkgname-$pkgver.tar.gz
         pacman.conf
-        makepkg.conf)
-md5sums=('945b95633cc7340efb4d4564b463c6b1'
-         '27271a59b9c9f748547ef4feae90bc5c'
-         '5565518e3bba232951bb241323f50ed2')
+        makepkg.conf
+        repo_add_sedspaces.patch
+            # Patch repo-add to work wtih BSD/sed or GNU/sed
+        stat_full_path.patch
+            # Patch to use full path of stat in case user has coreutils
+        makepkg_sed.patch
+            # Patch makepkg to work with BSD/sed or GNU/sed
+        )
 
 build() {
   cd $srcdir/$pkgname-$pkgver
   
-  ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var
+  patch -p0 < $startdir/stat_full_path.patch
+  patch -p0 < $startdir/repo_add_sedspaces.patch
+  patch -p0 < $startdir/makepkg_sed.patch
+  sed -i~ -e 's/--strip-debug/-S/' scripts/makepkg.sh.in # Work with Mac's strip
+  ./configure --prefix=/opt/arch
   make || return 1
   make DESTDIR=$pkgdir install || return 1
 
@@ -53,10 +62,10 @@ build() {
     -e "s|@CARCHFLAGS[@]|$myflags|g"
 
   # install completion files
-  mkdir -p $pkgdir/etc/bash_completion.d/
-  install -m644 contrib/bash_completion $pkgdir/etc/bash_completion.d/pacman
-  mkdir -p $pkgdir/usr/share/zsh/site-functions/
-  install -m644 contrib/zsh_completion $pkgdir/usr/share/zsh/site-functions/_pacman
+  mkdir -p $pkgdir/opt/arch/etc/bash_completion.d/
+  install -m644 contrib/bash_completion $pkgdir/opt/arch/etc/bash_completion.d/pacman
+  mkdir -p $pkgdir/opt/arch/share/zsh/site-functions/
+  install -m644 contrib/zsh_completion $pkgdir/opt/arch/share/zsh/site-functions/_pacman
 }
 
 # vim: set ts=2 sw=2 et:
