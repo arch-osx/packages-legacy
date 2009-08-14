@@ -24,7 +24,7 @@ source=(ftp://ftp.archlinux.org/other/pacman/$pkgname-$pkgver.tar.gz
             # Patch repo-add to work wtih BSD/sed or GNU/sed
         )
 md5sums=('945b95633cc7340efb4d4564b463c6b1'
-         'b99de01a0c278b3b1b96556b34c8fde3'
+         'ffa973c7c864e7cbef31d33fba5fe5b0'
          '64e35f245d31434a44d6b504dd086564'
          'dbf562b233c49d17c1467b22a901da4c')
 

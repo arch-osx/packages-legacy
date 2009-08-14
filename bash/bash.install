@@ -2,9 +2,9 @@ info_dir=/opt/arch/share/info
 info_files=(bash.info)
 
 post_install() {
-  [ -x opt/arch/bin/install-info ] || return 0
+  [ -x /opt/arch/bin/install-info ] || return 0
   for f in ${info_files[@]}; do
-    opt/arch/bin/install-info ${info_dir}/$f.gz ${info_dir}/dir 2> /dev/null
+    /opt/arch/bin/install-info ${info_dir}/$f.gz ${info_dir}/dir 2> /dev/null
   done
 }
 
@@ -13,9 +13,9 @@ post_upgrade() {
 }
 
 pre_remove() {
-  [ -x opt/arch/bin/install-info ] || return 0
+  [ -x /opt/arch/bin/install-info ] || return 0
   for f in ${info_files[@]}; do
-    opt/arch/bin/install-info --delete ${info_dir}/$f.gz ${info_dir}/dir 2> /dev/null
+    /opt/arch/bin/install-info --delete ${info_dir}/$f.gz ${info_dir}/dir 2> /dev/null
   done
 }
 # vim:set ts=2 sw=2 et:

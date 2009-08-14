@@ -1,27 +1,41 @@
-# $Id$
-# Maintainer: Andreas Radke <andyrtr@archlinux.org>
+# PKGBUILD autocreated by ABStoOSX 0.2
+# $Id
+# ArchLinux Maintainer: Allan McRae <allan@archlinux.org>
 # Contributor: Jochem Kossen <j.kossen@home.nl>
 
 pkgname=fakeroot
-pkgver=1.12.1
-pkgrel=2
+pkgver=1.13
+pkgrel=1
 pkgdesc="Gives a fake root environment, useful for building packages as a non-privileged user"
 arch=('macx86')
 license=('GPL')
 url="http://packages.debian.org/fakeroot"
 groups=('base-devel')
 depends=()
-options=('!libtool')
+options=('!libtool' '!strip')
 source=(http://ftp.debian.org/debian/pool/main/f/$pkgname/${pkgname}_${pkgver}.tar.gz
-        fakeroot_mac.diff)
-md5sums=('87970d6784f536cde84f9bcbaaa52720'
+        fakeroot_mac.patch)
+md5sums=('e0cbeceb066cc678c9fe1d6d35d24ceb'
          '6f9c9bdb51d97bdfd26cfe118be6fd9a')
 
 build() {
-  cd $startdir/src/$pkgname-$pkgver
-  patch -p0 < $startdir/fakeroot_mac.diff
-  ./configure --prefix=/opt/arch --libdir=/opt/arch/lib/libfakeroot --disable-static
-  make || return 1
-  make DESTDIR=$startdir/pkg install
-}
+  cd ${srcdir}/$pkgname-$pkgver
+  patch -p0 < $startdir/fakeroot_mac.patch
 
+  ./configure --prefix=/opt/arch --libdir=/opt/arch/lib/libfakeroot \
+     --disable-static --with-ipc=sysv || return 1
+    # --with-ipc=tcp is currently broken and no option on smp systems
+  make || return 1
+  make DESTDIR=${pkgdir} install || return 1
+  # install README for sysv/tcp usage
+  install -Dm644 $srcdir/$pkgname-$pkgver/README $pkgdir/opt/arch/share/doc/$pkgname/README
+
+  # Build for 64 bit
+  find . -name Makefile -exec sed -i~ 's/CFLAGS = -arch i686/CFLAGS = -arch x86_64/' {} \; || return 1
+  make clean && make || return 1
+  lipo -create ${pkgdir}/opt/arch/lib/libfakeroot/libfakeroot-0.dylib \
+    .libs/libfakeroot-0.dylib -output \
+    ${pkgdir}/opt/arch/lib/libfakeroot/libfakeroot-0.dylib.uni  || return 1
+  mv ${pkgdir}/opt/arch/lib/libfakeroot/libfakeroot-0.dylib.uni \
+     ${pkgdir}/opt/arch/lib/libfakeroot/libfakeroot-0.dylib || return 1
+}

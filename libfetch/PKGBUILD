@@ -1,31 +1,31 @@
-# ArchOSX Maintainer: Kevin Barry <barryk gmail com>
+# PKGBUILD autocreated by ABStoOSX 0.2
+# $Id
 # ArchLinux Maintainer: Aaron Griffin <aaron@archlinux.org>
 # Contributor: Xavier Chantry <shiningxc@gmail.com>
 
 pkgname=libfetch
-pkgver=2.20
-pkgrel=4
+pkgver=2.23
+pkgrel=1
 pkgdesc="URL based download library"
 arch=('macx86')
 license=('BSD')
 groups=('base')
 depends=('openssl')
-url="http://cvsweb.netbsd.org/bsdweb.cgi/pkgsrc/net/fetch/"
-source=(Makefile http://ftp.archlinux.org/other/$pkgname/$pkgname-$pkgver.tar.gz)
-    
-md5sums=('d02bd0533f471ad9f4b237f0241b43d8'
-         '085d4f5c9b83a3b5416e2c54e3c8f9cb')
-         
+url="http://cvsweb.netbsd.org/bsdweb.cgi/pkgsrc/net/libfetch/"
+source=(Makefile ftp://ftp.archlinux.org/other/$pkgname/$pkgname-$pkgver.tar.gz)
+md5sums=('bdad58a389f2461779b101380af3fd84'
+         'c1c1a8ccabc3bf9acda833bcbc6821b1')
+
 # source PKGBUILD && mksource
 mksource() {
-    export CVSROOT=:pserver:anoncvs@anoncvs.NetBSD.org:/cvsroot
+	export CVSROOT=:pserver:anoncvs@anoncvs.NetBSD.org:/cvsroot
     D=pkgsrc/net/libfetch
-    [ -d "$D" ] && cvs up "$D" || cvs co "$D"
-    pushd "$D"
-    dirname=$(cvs log 2>/dev/null | /bin/grep "^libfetch-.*:$" | head -n1 | sed 's/://')
-    cp -r files $dirname
-    tar -cv --exclude=CVS -f ../../../$dirname.tar.gz $dirname
-    rm -r $dirname
+	[ -d "$D" ] && cvs up "$D" || cvs co "$D"
+	pushd "$D"
+	dirname=$(cvs log 2>/dev/null | /bin/grep "^libfetch-.*:$" | head -n1 | sed 's/://')
+	cp -r files $dirname
+	tar -cv --exclude=CVS -f ../../../$dirname.tar.gz $dirname
+	rm -r $dirname
     popd
 }
 
@@ -35,4 +35,3 @@ build() {
   make || return 1
   make DESTDIR=$pkgdir install
 }
-

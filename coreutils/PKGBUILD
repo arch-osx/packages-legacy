@@ -1,42 +1,66 @@
-# ArchOSX Maintainer: Kevin Barry <barryk gmail com>
-# ArchLinux Maintainer: judd <jvinet at zeroflux.org>
+# PKGBUILD autocreated by ABStoOSX 0.2
+# $Id
+# ArchLinux Maintainer: Allan McRae <allan@archlinux.org>
+# Contributor: judd <jvinet@zeroflux.org>
+
 pkgname=coreutils
-pkgver=6.12
+pkgver=7.4
 pkgrel=1
 pkgdesc="The basic file, shell and text manipulation utilities of the GNU operating system"
 arch=('macx86')
 license=('GPL3')
 url="http://www.gnu.org/software/coreutils"
 groups=('base')
+depends=('gettext' 'gmp>=4.2.4')
 provides=('mktemp')
 conflicts=('mktemp')
-depends=('gettext')
 replaces=('sh-utils' 'fileutils' 'textutils' 'mktemp')
-backup=('etc/pam.d/su')
-options=('!emptydirs')
-source=(ftp://ftp.gnu.org/gnu/$pkgname/$pkgname-$pkgver.tar.gz)
-md5sums=('2ca9ac69823dbd567b905a9e9f53c4f6')
+install=${pkgname}.install
+options=('!emptydirs' '!makeflags')
+source=(ftp://ftp.gnu.org/gnu/$pkgname/$pkgname-$pkgver.tar.gz
+	coreutils-i18n.patch
+	coreutils-uname.patch
+	coreutils-pam.patch
+	coreutils-6.10-configuration.patch
+	coreutils-7.3-automake.patch
+    )
+md5sums=('c52f4f64dda9a245c38e74c09fdd86d2'
+         'ed03cc1618dc815fe0a8b5975b4d6198'
+         '18d3ba178e2691242287b59bd81aedb9'
+         '2127eb34886396b8361c9ab39acfe01c'
+         '081aeb04487d1445d0dc3fc98cf41260'
+         'd35708c63564fb302e4c9208323ee823'
+         )
 
 build() {
-  cd $startdir/src/$pkgname-$pkgver
-
-  # only needed if new autoconf 2.62 is used
-  #autoreconf
+  cd ${srcdir}/${pkgname}-${pkgver}
 
   # added pam patch and i18n patch from fedora cvs
-  # make head and tail recognize the old syntax (eg, tail -10)
-  export DEFAULT_POSIX2_VERSION=199209
+  patch -Np1 -i $srcdir/coreutils-pam.patch || return 1
+  patch -Np1 -i $srcdir/coreutils-i18n.patch || return 1
+  patch -Np1 -i $srcdir/coreutils-6.10-configuration.patch || return 1
 
-  #autoconf
-  ./configure --prefix=/opt/arch ac_cv_func_openat=no
+  # from gentoo portage
+  patch -Np1 -i $srcdir/coreutils-uname.patch || return 1
+
+  # we do not use the beta automake...
+  patch -Np1 -i $srcdir/coreutils-7.3-automake.patch || return 1
+  #autoreconf -v
+
+  ./configure --prefix=/opt/arch \
+	--enable-pam ac_cv_func_openat=no || return 1
   make || return 1
-  make DESTDIR=$startdir/pkg install
-  rm -f $startdir/pkg/opt/arch/bin/hostname $startdir/pkg/opt/arch/share/man/man1/hostname.1 || return 1
-  rm -f $startdir/pkg/opt/arch/bin/uptime $startdir/pkg/opt/arch/share/man/man1/uptime.1 || return 1
-  rm -f $startdir/pkg/opt/arch/bin/groups $startdir/pkg/opt/arch/share/man/man1/groups.1 || return 1
-  rm -f $startdir/pkg/opt/arch/bin/kill $startdir/pkg/opt/arch/share/man/man1/kill.1|| return 1
-  #rm -f $startdir/pkg/opt/arch/lib/charset.alias # This can be created in a number of places. Right now we have coreutils own it
-  rm -rf $startdir/pkg/opt/arch/share/info # ArchLinux does use info for coreutils.
-                                           # If we add it, it requires an install script
-}
+  make DESTDIR=${pkgdir} install || return 1
 
+  rm -f ${pkgdir}/opt/arch/bin/hostname ${pkgdir}/opt/arch/share/man/man1/hostname.1 || return 1
+  rm -f ${pkgdir}/opt/arch/bin/uptime ${pkgdir}/opt/arch/share/man/man1/uptime.1 || return 1
+  rm -f ${pkgdir}/opt/arch/bin/groups ${pkgdir}/opt/arch/share/man/man1/groups.1 || return 1
+  rm -f ${pkgdir}/opt/arch/bin/kill ${pkgdir}/opt/arch/share/man/man1/kill.1|| return 1
+  cd ${pkgdir}/opt/arch/bin
+  install -dm755 ${pkgdir}/opt/arch/{bin,sbin}
+  mv chroot $pkgdir/opt/arch/sbin/
+  ln -sf test [
+
+  rm -f ${pkgdir}/opt/arch/share/info/dir
+  gzip -9 ${pkgdir}/opt/arch/share/info/*
+}
