@@ -37,7 +37,3 @@ _resetbackups() {
         fi
     done
 }
-
-op=$1
-shift
-$op $*
