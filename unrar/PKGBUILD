@@ -4,14 +4,15 @@
 # Contributor: dorphell <dorphell@gmx.net>
 
 pkgname=unrar
-pkgver=3.8.5
+pkgver=3.9.5
 pkgrel=2
 pkgdesc="The RAR uncompression program"
 arch=('macx86')
 url="http://rarlab.com"
 license=('custom')
 source=(http://www.rarlab.com/rar/unrarsrc-${pkgver}.tar.gz)
-md5sums=('875688e6a144a3f75d2a6a0da3e43f8b')
+
+md5sums=('cc7184f461a2fb13d9b80c780993d9f1')
 
 build() {
   cd ${srcdir}/${pkgname}

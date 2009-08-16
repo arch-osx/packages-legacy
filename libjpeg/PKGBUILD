@@ -1,28 +1,31 @@
-# ArchOSX Maintainer: Kevin Barry <barryk gmail com>
+# PKGBUILD autocreated by ABStoOSX 0.2
+# $Id
 # ArchLinux Maintainer: Allan McRae <allan@archlinux.org>
-# Committer: Judd Vinet <jvinet@zeroflux.org>
+# Contributor: Judd Vinet <jvinet@zeroflux.org>
 
 pkgname=libjpeg
-pkgver=6b
-pkgrel=6
+pkgver=7
+pkgrel=1
 pkgdesc="Library of JPEG support functions"
 arch=('macx86')
 url="http://www.ijg.org/"
 license=('custom')
-#depends=('glibc')
-#makedepends=('libtool')
+depends=( )
+makedepends=('libtool')
 options=(!libtool)
-source=(http://www.ijg.org/files/jpegsrc.v$pkgver.tar.gz)
-md5sums=('dbd5f3b47ed13132f04c685d608a7547')
+source=(http://www.ijg.org/files/jpegsrc.v7.tar.gz)
+md5sums=('382ef33b339c299b56baf1296cda9785')
 
 build() {
   cd $srcdir/jpeg-$pkgver
-  cp /usr/share/libtool/config.{guess,sub} .
-  sed -i~ -e "s#./libtool#glibtool#" configure
-  ./configure --prefix=/opt/arch --enable-static --enable-shared
+
+  #sed -i~ -e "s#./libtool#glibtool#" configure
+  ./configure --prefix=/opt/arch --enable-shared --enable-static
   make || return 1
-  mkdir -p $pkgdir/opt/arch/{bin,lib,include,share/man/man1}
-  make prefix=$pkgdir/opt/arch mandir=$pkgdir/opt/arch/share/man/man1 install
+  make prefix=$pkgdir/opt/arch mandir=$pkgdir/opt/arch/share/man install
+  
+  # See FS#11116 - re-assess need with v7 release sometime...
   install -m644 jpegint.h $pkgdir/opt/arch/include
+
   install -Dm644 README $pkgdir/opt/arch/share/licenses/libjpeg/README
 }

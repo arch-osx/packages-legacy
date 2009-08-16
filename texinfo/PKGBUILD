@@ -24,5 +24,4 @@ build() {
    make DESTDIR=${pkgdir} install || return 1
    rm -f ${pkgdir}/opt/arch/share/info/dir
    gzip ${pkgdir}/opt/arch/share/info/*
-   rm -f ${pkgdir}/opt/arch/lib/charset.alias
 }

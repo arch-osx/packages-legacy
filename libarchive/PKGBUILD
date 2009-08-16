@@ -1,15 +1,16 @@
-# ArchOSX Maintainer: Tom Wambold <tom5760@gmail.com>
+# PKGBUILD autocreated by ABStoOSX 0.2
+# $Id
 # ArchLinux Maintainer: Dan McGee <dan@archlinux.org>
 # ArchLinux Maintainer: Aaron Griffin <aaron@archlinux.org>
 pkgname=libarchive
-pkgver=2.6.1
+pkgver=2.7.0
 pkgrel=2
 pkgdesc="library that can create and read several streaming archive formats"
-arch=(macx86)
-url="http://people.freebsd.org/~kientzle/libarchive/"
+arch=('macx86')
+url="http://libarchive.googlecode.com/"
 license=('BSD')
 groups=('base')
-depends=('zlib' 'bzip2')
+depends=('zlib' 'bzip2' 'xz-utils' 'openssl')
 source=(http://libarchive.googlecode.com/files/libarchive-$pkgver.tar.gz)
 
 # pacman.static build fails unless we keep the libtool files (or unless we link
@@ -18,7 +19,7 @@ options=(libtool)
 
 build() {
   cd $startdir/src/$pkgname-$pkgver
-  ./configure --prefix=/opt/arch --without-lzmadec
+  ./configure --prefix=/opt/arch
 
   make || return 1
   make DESTDIR=$startdir/pkg install
@@ -26,9 +27,7 @@ build() {
   # install license
   mkdir -p $startdir/pkg/opt/arch/share/licenses/libarchive
   install -m644 COPYING $startdir/pkg/opt/arch/share/licenses/libarchive/
-  find $startdir/pkg -name \*.la -delete
 }
 
-md5sums=('9d9f83947ee9d5732289ed48d00e3743')
-sha256sums=('4d0ad4e5c33aa9725c7d92a42ae605815781372db949cd9906945e6c0d85c179')
-
+md5sums=('a2103ca334037562ad327eb3aed54869')
+sha256sums=('ae21ffc8160241001ecbc7af0751ff65cfc5ceffae8a1b9cf6822328f4c0474e')

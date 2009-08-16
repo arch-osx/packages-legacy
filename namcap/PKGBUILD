@@ -9,14 +9,14 @@ pkgdesc="A Pacman package analyzer"
 arch=('macx86')
 url="http://projects.archlinux.org/?p=namcap.git"
 license=('GPL')
-depends=('python')
-optdepends=('licenses')
+depends=('python' 'licenses')
 source=("ftp://ftp.archlinux.org/other/$pkgname/$pkgname-$pkgver.tar.gz"
         'namcap_archosx.patch')
 md5sums=('6266a017431a77a0ef50dbe0ff5719e5'
          '82f5a954d7c870b0fcffd8c5210364c6')
 
 build() {
+  export PATH=/opt/arch/bin:$PATH
   cd $startdir/src/$pkgname-$pkgver
   patch -p0 < $startdir/namcap_archosx.patch
   ./setup.py install --root=$startdir/pkg || return 1

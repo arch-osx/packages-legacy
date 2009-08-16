@@ -4,7 +4,7 @@
 
 pkgname=bzip2
 pkgver=1.0.5
-pkgrel=3
+pkgrel=4
 pkgdesc="A high-quality data compression program"
 arch=('macx86')
 license=('custom')
@@ -13,32 +13,44 @@ groups=('base')
 depends=( )
 source=(http://www.bzip.org/$pkgver/bzip2-$pkgver.tar.gz
         Makefile-libbz2_dylib)
-
-build() {
-  cd $startdir/src/$pkgname-$pkgver
-  cp $startdir/Makefile-libbz2_dylib .
-  mkdir -p $startdir/pkg/opt/arch/bin $startdir/pkg/opt/arch/share/man/man1
-  mkdir -p $startdir/pkg/opt/arch/include $startdir/pkg/opt/arch/lib
-  make -f Makefile-libbz2_dylib || return 1
-  make bzip2recover libbz2.a || return 1
-  ln -sf libbz2.1.0.4.dylib libbz2.dylib
-  ln -sf libbz2.1.0.4.dylib libbz2.1.dylib
-  cp bzip2-shared $startdir/pkg/opt/arch/bin/bzip2
-  cp bzip2recover $startdir/pkg/opt/arch/bin
-  cp bzip2.1 $startdir/pkg/opt/arch/share/man/man1
-  mkdir -p $startdir/pkg/opt/arch/include
-  cp bzlib.h $startdir/pkg/opt/arch/include
-  cp -a libbz2*.dylib $startdir/pkg/opt/arch/lib
-  cd $startdir/pkg/opt/arch/bin
-  ln -sf bzip2 bunzip2
-  ln -sf bzip2 bzcat
-  cd $startdir/pkg/opt/arch/share/man/man1
-  ln -sf bzip2.1 bunzip2.1
-  ln -sf bzip2.1 bzcat.1
-  ln -sf bzip2.1 bzip2recover.1
-
-  mkdir -p ${startdir}/pkg/opt/arch/share/licenses/${pkgname}
-  install -m644 ${startdir}/src/${pkgname}-${pkgver}/LICENSE ${startdir}/pkg/opt/arch/share/licenses/${pkgname}/LICENSE
-}
 md5sums=('3c15a0c8d1d3ee1c46a1634d00617b1a'
          'a0354e35742a2e2e7a87799ea1b9ea2b')
+
+build() {
+  cd $srcdir/$pkgname-$pkgver
+  
+  cp $startdir/Makefile-libbz2_dylib .
+  # add large-file support
+  sed -e 's/^CFLAGS=\(.*\)$/CFLAGS=\1 \$(BIGFILES)/' -i ./Makefile-libbz2_dylib
+  
+  # use our optimization
+  sed -i "s|-O2|${CFLAGS}|g" Makefile
+  sed -i "s|-O2|${CFLAGS}|g" Makefile-libbz2_so
+  
+  make -f Makefile-libbz2_dylib || return 1
+  make bzip2recover libbz2.a || return 1
+
+  install -dm755 $pkgdir/opt/arch/bin
+  install -m755 bzip2-shared $pkgdir/opt/arch/bin/bzip2
+  install -m755 bzip2recover $pkgdir/opt/arch/bin
+  ln -sf bzip2 $pkgdir/opt/arch/bin/bunzip2
+  ln -sf bzip2 $pkgdir/opt/arch/bin/bzcat
+
+  install -Dm755 libbz2.1.0.4.dylib $pkgdir/opt/arch/lib/libbz2.1.0.4.dylib
+  ln -s libbz2.1.0.4.dylib $pkgdir/opt/arch/lib/libbz2.dylib
+  ln -s libbz2.1.0.4.dylib $pkgdir/opt/arch/lib/libbz2.1.dylib
+  ln -s libbz2.1.0.4.dylib $pkgdir/opt/arch/lib/libbz2.1.0.dylib
+  
+  install -Dm644 libbz2.a ${pkgdir}/opt/arch/lib/libbz2.a
+
+  install -Dm644 bzlib.h $pkgdir/opt/arch/include/bzlib.h  
+
+  install -Dm644 bzip2.1 $pkgdir/opt/arch/share/man/man1/bzip2.1
+  ln -sf bzip2.1 $pkgdir/opt/arch/share/man/man1/bunzip2.1
+  ln -sf bzip2.1 $pkgdir/opt/arch/share/man/man1/bzcat.1
+  ln -sf bzip2.1 $pkgdir/opt/arch/share/man/man1/bzip2recover.1
+
+  install -Dm644 $srcdir/${pkgname}-${pkgver}/LICENSE \
+                 $pkgdir/opt/arch/share/licenses/${pkgname}/LICENSE
+}
+

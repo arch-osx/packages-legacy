@@ -1,4 +1,7 @@
-# Maintainer: Andreas Radke <andyrtr@archlinux.org>
+# PKGBUILD autocreated by ABStoOSX 0.2
+# $Id
+# ArchLinux Maintainer: Andreas Radke <andyrtr@archlinux.org>
+
 pkgname=which
 pkgver=2.20
 pkgrel=1
@@ -8,7 +11,7 @@ url="http://www.xs4all.nl/~carlo17/which"
 license=('GPL3')
 install=which.install
 groups=('base')
-depends=('texinfo')
+depends=( 'texinfo')
 source=(http://www.xs4all.nl/~carlo17/$pkgname/$pkgname-$pkgver.tar.gz)
 md5sums=('95be0501a466e515422cde4af46b2744')
 

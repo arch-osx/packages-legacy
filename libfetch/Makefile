@@ -6,7 +6,8 @@ FETCH_WITH_OPENSSL = true
 
 WARNINGS = -Wall -Wstrict-prototypes -Wsign-compare -Wchar-subscripts \
            -Wpointer-arith -Wcast-align -Wsign-compare
-CFLAGS   = -O2 -pipe -I. -fPIC $(WARNINGS) \
+# ftp.c has some aliasing issues...
+CFLAGS   = -O2 -pipe -I. -fPIC -fno-strict-aliasing $(WARNINGS) \
 		   -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGE_FILES
 
 CFLAGS	+= -DFTP_COMBINE_CWDS -DNETBSD
@@ -74,7 +75,7 @@ clean:
 .PHONY: clean
 
 install: all
-	 mkdir -p $(DESTDIR)$(prefix)/lib $(DESTDIR)$(prefix)/include $(DESTDIR)$(prefix)/share/man/man3
+	mkdir -p $(DESTDIR)$(prefix)/lib $(DESTDIR)$(prefix)/include $(DESTDIR)$(prefix)/share/man/man3
 	$(Q) $(INSTALL) -m 755 libfetch.dylib $(DESTDIR)$(prefix)/lib/libfetch.dylib
 	$(Q) $(INSTALL) -m 644 libfetch.a $(DESTDIR)$(prefix)/lib/libfetch.a
 	$(Q) $(INSTALL) -m 644 fetch.h $(DESTDIR)$(prefix)/include/fetch.h

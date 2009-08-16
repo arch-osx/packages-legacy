@@ -30,6 +30,9 @@ build() {
   mkdir -p ${pkgdir}/opt/arch/bin
   install -m755 ${srcdir}/latexit.sh ${pkgdir}/opt/arch/bin/latexit
 
+  # Copy default preferences (Paths to archlinux tools)
+  install -m644 fr.club.ktd.LaTeXiT.plist ${pkgdir}/Library/Preferences/fr.club.ktd.LaTeXiT.plist
+
   # Copy license
   mkdir -p ${pkgdir}/opt/arch/share/licenses/${pkgname}
   install -m644 Licence.rtf ${pkgdir}/opt/arch/share/licenses/${pkgname}

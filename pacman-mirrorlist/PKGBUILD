@@ -2,14 +2,14 @@
 # Maintainer: Dan McGee <dan@archlinux.org>
 
 pkgname=pacman-mirrorlist
-pkgver=20090422
+pkgver=20090813
 pkgrel=1
 pkgdesc="Arch Linux mirror list for use by pacman"
 arch=('macx86' 'i686' 'x86_64')
 url="http://www.archlinux.org/pacman/"
 license=('GPL')
 groups=('base')
-backup=(etc/pacman.d/mirrorlist)
+backup=(opt/etc/pacman.d/mirrorlist)
 source=(mirrorlist)
 
 build() {
@@ -20,4 +20,4 @@ build() {
   # rm $pkdir/etc/pacman.d/mirrorlist~
 }
 
-md5sums=('5a0742439a9a20b10ba7ba4a0489d7d1')
+md5sums=('05352778acd7d5a1a294203daabe6539')
