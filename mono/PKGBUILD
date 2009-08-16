@@ -4,13 +4,13 @@
 # Contributor: Brice Carpentier <brice@dlfp.org>
 
 pkgname=mono
-pkgver=2.4
-pkgrel=2
+pkgver=2.4.2.3
+pkgrel=1
 pkgdesc="Free implementation of the .NET platform including runtime and compiler"
 arch=('macx86')
 license=('GPL' 'LGPL2' 'MPL' 'custom:MITX11')
 url="http://www.mono-project.com/"
-depends=('zlib' 'libgdiplus>=2.4')
+depends=('zlib' 'libgdiplus>=2.4.2')
 makedepends=('pkgconfig')
 options=('!libtool' '!makeflags')
 provides=('monodoc')
@@ -18,7 +18,7 @@ conflicts=('monodoc')
 source=(http://ftp.novell.com/pub/mono/sources/${pkgname}/${pkgname}-${pkgver}.tar.bz2
         mono.rc.d
 	mini_amd64.patch)
-md5sums=('da2bf1c0aba2958d26c5e8a9a49fd9d1'
+md5sums=('696f25afc8453cd0d1c78de6e905dcf2'
          '8315e46c6a6e9625502521fc0ad1a322'
          '332530de044cabff941c712b7f2ace8e')
 
