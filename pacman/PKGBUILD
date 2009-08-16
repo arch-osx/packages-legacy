@@ -4,7 +4,7 @@
 
 pkgname=pacman
 pkgver=3.3.0
-pkgrel=4
+pkgrel=5
 pkgdesc="A library-based package manager with dependency support"
 arch=('macx86')
 url="http://www.archlinux.org/pacman/"
@@ -60,10 +60,11 @@ build() {
       mychost="i386-apple-darwin9.6.0"
       myflags="-arch \${ARCH} -mtune=generic -msse -msse2 -O2 -pipe -I/opt/arch/include \${SDK_CFLAGS}"
   esac
-  sed -i~ $pkgdir/opt/arch/etc/makepkg.conf \
-    -e "s|@CARCH[@]|$mycarch|g" \
-    -e "s|@CHOST[@]|$mychost|g" \
-    -e "s|@CARCHFLAGS[@]|$myflags|g" &&
+  sed -i~ \
+    -e "s|@CARCH@|$mycarch|g" \
+    -e "s|@CHOST@|$mychost|g" \
+    -e "s|@CARCHFLAGS@|$myflags|g" \
+    $pkgdir/opt/arch/etc/makepkg.conf &&
     rm $pkgdir/opt/arch/etc/makepkg.conf~
 
 
