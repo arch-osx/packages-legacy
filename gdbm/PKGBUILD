@@ -3,7 +3,7 @@
 # ArchLinux Maintainer: judd <jvinet@zeroflux.org>
 pkgname=gdbm
 pkgver=1.8.3
-pkgrel=5
+pkgrel=6
 pkgdesc="GNU database library"
 url="http://www.gnu.org/software/gdbm/gdbm.html"
 license=('GPL')
@@ -18,7 +18,12 @@ md5sums=('1d1b1d5c0245b1c00aff92da751e9aa1'
 build() {
   cd $startdir/src/$pkgname-$pkgver
   patch -p0 < $startdir/binowner.patch
+
   ./configure --prefix=/opt/arch
+
+  #fix broken generated libtool for universal
+  sed -e "s|-dynamiclib)|-dynamiclib) ${UNIFLAGS}|g" -i~ libtool
+
   make prefix=/opt/arch || return 1
   make prefix=$startdir/pkg/opt/arch install
   make prefix=$startdir/pkg/opt/arch install-compat

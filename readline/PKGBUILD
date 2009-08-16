@@ -4,7 +4,7 @@
 
 pkgname=readline
 pkgver=5.2.013
-pkgrel=2
+pkgrel=3
 pkgdesc="GNU readline library"
 arch=('macx86' 'i686' 'x86_64')
 url="http://tiswww.case.edu/php/chet/readline/rltop.html"
@@ -22,7 +22,16 @@ build() {
   cd ${startdir}/src/${pkgname}-${pkgver}
 
   patch -p0 < ${startdir}/readline_stdio.patch
+
   ./configure --prefix=/opt/arch --mandir=/opt/arch/share/man --infodir=/opt/arch/share/info
+
+  #stupid broken scripts. when will people stop trying to outsmart stuff?
+  #http://techdebug.com/blog/2009/01/03/compiling-readline-on-an-osx-105-intel-x86_64/
+  cd shlib
+  sed -e 's/-dynamic/-dynamiclib/' Makefile > Makefile.good
+  mv Makefile.good Makefile
+  cd ..
+
   make SHLIB_LIBS=-lncurses || return 1
   make DESTDIR=${startdir}/pkg install || return 1
   

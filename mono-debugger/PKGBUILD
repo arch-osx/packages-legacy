@@ -3,16 +3,16 @@
 # ArchLinux Maintainer: Daniel Isenmann <daniel@archlinux.org>
 
 pkgname=mono-debugger
-pkgver=2.4
+pkgver=2.4.2
 pkgrel=1
 pkgdesc="The Mono Debugger"
 arch=('macx86')
 license=('GPL')
 url="http://www.mono-project.com/"
-depends=('mono>=2.4')
+depends=('mono>=2.4.2')
 makedepends=('pkgconfig')
 source=(http://ftp.novell.com/pub/mono/sources/${pkgname}/${pkgname}-${pkgver}.tar.bz2)
-md5sums=('caa8608bb678b7f8662a3d45b70b0364')
+#md5sums=('caa8608bb678b7f8662a3d45b70b0364')
 
 build() {
   # get rid of that .wapi errors; thanks to brice

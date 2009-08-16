@@ -4,7 +4,7 @@
 
 pkgname=libsigsegv
 pkgver=2.6
-pkgrel=1
+pkgrel=2
 arch=('macx86')
 pkgdesc="Page fault detection library"
 url="http://libsigsegv.sourceforge.net/"
@@ -16,7 +16,9 @@ md5sums=('7e24993730649d13c6eabc28bd24de35')
 
 build() {
   cd ${startdir}/src/libsigsegv-${pkgver}
-  ./configure --prefix=/opt/arch --enable-shared
+  
+  ./configure --prefix=/opt/arch #--enable-shared 
+
   make || return 1
   make DESTDIR=${startdir}/pkg install
 }

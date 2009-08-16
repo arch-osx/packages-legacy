@@ -4,7 +4,7 @@
 
 pkgname=libjpeg
 pkgver=6b
-pkgrel=6
+pkgrel=7
 pkgdesc="Library of JPEG support functions"
 arch=('macx86')
 url="http://www.ijg.org/"
@@ -19,7 +19,13 @@ build() {
   cd $srcdir/jpeg-$pkgver
   cp /usr/share/libtool/config.{guess,sub} .
   sed -i~ -e "s#./libtool#glibtool#" configure
-  ./configure --prefix=/opt/arch --enable-static --enable-shared
+  ./configure --prefix=/opt/arch --enable-static --enable-shared \
+#    CC="gcc $ARCHFLAGS" \
+#    CXX="g++ $ARCHFLAGS" \
+#    CPP="gcc -E" CXXCPP="g++ -E"
+
+  #sed -i~ -e 's/$(LIBTOOL) --mode=link $(CC)/$(LIBTOOL) --mode=link $(CC) -arch i686 -arch x86_64/' Makefile
+
   make || return 1
   mkdir -p $pkgdir/opt/arch/{bin,lib,include,share/man/man1}
   make prefix=$pkgdir/opt/arch mandir=$pkgdir/opt/arch/share/man/man1 install

@@ -4,13 +4,13 @@
 # Contributor: Tobias Kieslich <tobias@justdreams.de>
 
 pkgname=xsp
-pkgver=2.4
+pkgver=2.4.2
 pkgrel=1
 pkgdesc="A simple webserver based on mono - provides ASP.NET support"
 arch=('macx86')
 license=('custom')
 url="http://www.go-mono.com"
-depends=('mono>=2.4')
+depends=('mono>=2.4.2')
 makedepends=('sed')
 options=(!makeflags)
 source=(http://ftp.novell.com/pub/mono/sources/${pkgname}/${pkgname}-${pkgver}.tar.bz2 )

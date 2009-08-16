@@ -3,7 +3,7 @@
 # ArchLinux Maintainer: judd <jvinet@zeroflux.org>
 pkgname=findutils
 pkgver=4.4.0
-pkgrel=1
+pkgrel=2
 pkgdesc="GNU utilities to locate files"
 arch=('macx86')
 license=('GPL3')
@@ -15,7 +15,7 @@ md5sums=('49e769ac4382fae6f104f99d54d0a112')
 
 build() {
   cd $startdir/src/$pkgname-$pkgver
-  ./configure --prefix=/opt/arch
+  ./configure --prefix=/opt/arch --disable-dependency-tracking
   make || return 1
   # believe it or not, the Makefile really wants to remove
   # {PREFIX}/{PREFIX}/var", so we let it...

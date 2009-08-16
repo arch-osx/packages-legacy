@@ -32,6 +32,8 @@ mksource() {
 build() {
   cd $srcdir/${pkgname}-${pkgver}
   cp ../Makefile .
+  #sed -i~ -e 's/CFLAGS[ ]*=/CFLAGS= -arch i686 -arch x86_64/' Makefile
+  #sed -i~ -e 's/LDFLAGS[ ]*=/LDFLAGS= -arch i686 -arch x86_64/' Makefile
   make || return 1
   make DESTDIR=$pkgdir install
 }

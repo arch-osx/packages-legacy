@@ -5,7 +5,7 @@
 
 pkgname=lzma-utils
 pkgver=4.32.7
-pkgrel=1
+pkgrel=2
 pkgdesc="Compression utility like bzip2, but 15% better and faster"
 arch=('macx86')
 url="http://tukaani.org/lzma/"
@@ -20,7 +20,7 @@ md5sums=('2a748b77a2f8c3cbc322dbd0b4c9d06a')
 build() {
   cd "$startdir/src/lzma-$pkgver"
 
-  ./configure --prefix=/opt/arch
+  ./configure --prefix=/opt/arch --disable-dependency-tracking
   make || return 1
   make DESTDIR="$startdir/pkg" install
 }

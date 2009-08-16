@@ -4,13 +4,13 @@
 
 pkgname=pacman
 pkgver=3.2.2
-pkgrel=6
+pkgrel=7
 pkgdesc="A library-based package manager with dependency support"
 arch=('macx86')
 url="http://www.archlinux.org/pacman/"
 license=('GPL')
 groups=('base')
-depends=('libarchive>=2.6.0' 'libfetch>=2.2' 'pacman-mirrorlist' 'gettext')
+depends=('libarchive>=2.6.0' 'pacman-mirrorlist' 'gettext')
 optdepends=('fakeroot: for makepkg usage as normal user'
             'python: for rankmirrors script usage'
             'coreutils: for repo-add')
@@ -36,7 +36,7 @@ build() {
   patch -p0 < $startdir/repo_add_sedspaces.patch
   patch -p0 < $startdir/makepkg_sed.patch
   sed -i~ -e 's/--strip-debug/-S/' scripts/makepkg.sh.in # Work with Mac's strip
-  ./configure --prefix=/opt/arch
+  ./configure --prefix=/opt/arch --disable-internal-download --disable-dependency-tracking
   make || return 1
   make DESTDIR=$pkgdir install || return 1
 

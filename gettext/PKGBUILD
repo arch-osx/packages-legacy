@@ -2,7 +2,7 @@
 # ArchLinux Maintainer: judd <jvinet @ zeroflux.org>
 pkgname=gettext
 pkgver=0.17
-pkgrel=2
+pkgrel=3
 pkgdesc="GNU internationalization library"
 arch=(macx86)
 url="http://www.gnu.org/software/gettext"

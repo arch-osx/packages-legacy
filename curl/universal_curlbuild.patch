@@ -1,0 +1,14 @@
+--- include/curl/curlbuild.h.orig	2009-06-14 15:01:13.000000000 +0200
++++ include/curl/curlbuild.h	2009-05-18 23:24:20.000000000 +0200
+@@ -125,7 +125,11 @@
+ #endif
+ 
+ /* The size of `long', as computed by sizeof. */
++#ifdef __LP64__
+ #define CURL_SIZEOF_LONG 8
++#else /* !__LP64__ */
++#define CURL_SIZEOF_LONG 4
++#endif /* __LP64__ */
+ 
+ /* Signed integral data type used for curl_off_t. */
+ #define CURL_TYPEOF_CURL_OFF_T int64_t

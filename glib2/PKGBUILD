@@ -3,7 +3,7 @@
 
 pkgname=glib2
 pkgver=2.20.3
-pkgrel=1
+pkgrel=2
 pkgdesc="Common C routines used by GTK+ 2.4 and other libs"
 url="http://www.gtk.org/"
 arch=(macx86)
@@ -20,7 +20,9 @@ md5sums=('1173688c58b4b62809c83bb07a2cf71a'
 
 build() {
   cd "${srcdir}/glib-${pkgver}"
-  ./configure --prefix=/opt/arch --enable-static --enable-shared --with-pcre=system --disable-fam || return 1
+  ./configure --prefix=/opt/arch --enable-static --enable-shared --with-pcre=system --disable-fam \
+    --disable-dependency-tracking \
+    || return 1
   make || return 1
   make DESTDIR="${pkgdir}" install || return 1
   

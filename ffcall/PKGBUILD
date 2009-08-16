@@ -5,7 +5,7 @@
 
 pkgname=ffcall
 pkgver=1.10
-pkgrel=3
+pkgrel=4
 pkgdesc="C library for implementing foreign function calls in embedded interpreters"
 arch=('macx86')
 url="http://www.haible.de/bruno/packages-ffcall.html"
@@ -16,12 +16,39 @@ md5sums=('2db95007e901f3bc2ae7e5a9fe9ebea4')
 
 build() {
   cd ${startdir}/src/${pkgname}-${pkgver}
-  if [ "$CARCH" = "x86_64" ]; then
-    ./configure --prefix=/opt/arch --mandir=/opt/arch/share/man --with-pic || return 1
-  else
-    ./configure --prefix=/opt/arch --mandir=/opt/arch/share/man || return 1
-  fi
-  make || return 1
+  export CFLAGS="$(echo $CFLAGS | sed -e 's^-arch [a-z0-9_][a-z0-9_]*^^g')"
+  export LDFLAGS="$(echo $LDFLAGS | sed -e 's^-arch [a-z0-9_][a-z0-9_]*^^g')"
+
+  #x86_64 fails for now
+  #apparently because OS X binary format/assembler does not support some x86_64 asm pseudo ops
+  arches="i386"
+  binaries="lib/libavcall.a lib/libcallback.a lib/libtrampoline.a lib/libvacall.a"
+
+  for arch in $arches; do
+    echo "building $arch"
+    make clean
+    case "$arch" in
+        "i386")
+            ./configure --prefix=/opt/arch --mandir=/opt/arch/share/man --with-pic CC="gcc -arch i386" CPP="gcc -E" || return 1
+            ;;
+        "x86_64")
+            ./configure --prefix=/opt/arch --mandir=/opt/arch/share/man --with-pic --build=x86_64-apple-darwin9.4.0 || return 1
+            ;;
+    esac
+
+    make || return 1
+    mkdir -p $startdir/src/build/$arch/opt/arch
+    install -d ${startdir}/src/build/$arch/opt/arch/share/man || return 1
+    make DESTDIR=${startdir}/src/build/$arch install || return 1
+  done
+
   install -d ${startdir}/pkg/opt/arch/share/man || return 1
   make DESTDIR=${startdir}/pkg/ install || return 1
+
+  echo "making universal binaries"
+  for binary in $binaries; do
+      rm $startdir/pkg/opt/arch/$binary
+      lipo -create $startdir/src/build/*/opt/arch/$binary -output $startdir/pkg/opt/arch/$binary
+  done
+
 }

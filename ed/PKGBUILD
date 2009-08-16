@@ -1,7 +1,7 @@
 # Maintainer: Andreas Radke <andyrtr@archlinux.org>
 pkgname=ed
 pkgver=1.2
-pkgrel=1
+pkgrel=2
 pkgdesc="A POSIX-compliant line editor"
 arch=('macx86')
 license=('GPL')
@@ -15,7 +15,7 @@ md5sums=('3d42ac815b2dfd9c82a89dbd03151519')
 
 build() {
   cd ${srcdir}/${pkgname}-${pkgver}
-  ./configure --prefix=/opt/arch --mandir=/opt/arch/share/man --infodir=/opt/arch/share/info
+  ./configure --prefix=/opt/arch --mandir=/opt/arch/share/man --infodir=/opt/arch/share/info CC="gcc ${UNIFLAGS}" CPP="gcc -E"
   make || return 1
   make DESTDIR=${pkgdir} install || return 1
 

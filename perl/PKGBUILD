@@ -3,7 +3,7 @@
 # ArchLinux Maintainer: judd <jvinet@zeroflux.org>
 pkgname=perl
 pkgver=5.10.0
-pkgrel=4
+pkgrel=5
 pkgdesc="Practical Extraction and Report Language"
 arch=('macx86')
 license=('GPL' 'PerlArtistic')
@@ -57,7 +57,11 @@ build() {
     # for i686
     arch_opts=""
   fi
-  ./Configure -des -Dusethreads -Doptimize="${CFLAGS}" -Dprefix=/opt/arch \
+  
+  ccflags="$UNIFLAGS -nostdinc -B$SDK/usr/include/gcc -B$SDK/usr/lib/gcc -isystem$SDK/usr/include -F$SDK/System/Library/Frameworks"
+  ldflags="$UNIFLAGS -Wl,-syslibroot,$SDK"
+
+./Configure -des -Dusethreads -Doptimize="${CFLAGS}" -Dprefix=/opt/arch \
     -Dinstallprefix=${startdir}/pkg/opt/arch -Dvendorprefix=/opt/arch \
     -Dprivlib=/opt/arch/share/perl5/core_perl \
     -Darchlib=/opt/arch/lib/perl5/core_perl \
@@ -69,7 +73,16 @@ build() {
     -Dscriptdir='/opt/arch/bin/perlbin/core' \
     -Dsitescript='/opt/arch/bin/perlbin/site' \
     -Dvendorscript='/opt/arch/bin/perlbin/vendor' \
-    -Dman1ext=1perl -Dman3ext=3perl ${arch_opts}
+    -Dman1ext=1perl -Dman3ext=3perl ${arch_opts} \
+    \
+    -Accflags="$ccflags" \
+    -Accdlflags="$ccflags" \
+    -Aldflags="$ldflags" \
+    -Alddlflags="$ldflags" 
+
+  #sed -i~ -e 's/LDDLFLAGS =/LDDLFLAGS = -arch i686 -arch x86_64/' Makefile
+  #sed -i~ -e 's/CCDLFLAGS =/CCDLFLAGS = -arch i686 -arch x86_64/' Makefile
+  #sed -i~ -e 's/PLDLFLAGS =/PLDLFLAGS = -arch i686 -arch x86_64/' Makefile
 
   make || return 1
   make install

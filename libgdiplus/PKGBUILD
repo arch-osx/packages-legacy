@@ -3,21 +3,27 @@
 # ArchLinux Maintainer: Daniel Isenmann <daniel@archlinux.org>
 
 pkgname=libgdiplus
-pkgver=2.4
-pkgrel=1
+pkgver=2.4.2
+pkgrel=3
 pkgdesc="An Open Source Implementation of the GDI+ API"
 arch=('macx86')
 license=('MPL' 'LGPL')
 url="http://www.mono-project.com"
 depends=('libtiff' 'cairo>=1.8.6' 'giflib' 'glib2>=2.20.0' 'libexif')
-makedepends=('automake' 'pkgconfig')
+makedepends=('pkgconfig')
 options=('!libtool')
 source=(http://ftp.novell.com/pub/mono/sources/${pkgname}/${pkgname}-${pkgver}.tar.bz2)
-md5sums=('ddf40d6f21ab7e8942abd063d460e4fa')
+md5sums=('703210950bce2ed0a9824f897f774925')
 
 build() {
   cd ${startdir}/src/${pkgname}-${pkgver}
-  ./configure --prefix=/opt/arch --with-cairo=system
+
+  #http://bugs.freedesktop.org/show_bug.cgi?id=20006
+  cd cairo
+  patch -p1 < ${srcdir}/../mac64.patch
+  cd ..
+
+  ./configure --prefix=/opt/arch --with-cairo=system --disable-dependency-tracking
   make || return 1
   make DESTDIR=${startdir}/pkg install || return 1
 }

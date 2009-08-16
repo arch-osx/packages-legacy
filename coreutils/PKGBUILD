@@ -2,7 +2,7 @@
 # ArchLinux Maintainer: judd <jvinet at zeroflux.org>
 pkgname=coreutils
 pkgver=6.12
-pkgrel=1
+pkgrel=2
 pkgdesc="The basic file, shell and text manipulation utilities of the GNU operating system"
 arch=('macx86')
 license=('GPL3')
@@ -28,7 +28,7 @@ build() {
   export DEFAULT_POSIX2_VERSION=199209
 
   #autoconf
-  ./configure --prefix=/opt/arch ac_cv_func_openat=no
+  ./configure --prefix=/opt/arch ac_cv_func_openat=no --disable-dependency-tracking
   make || return 1
   make DESTDIR=$startdir/pkg install
   rm -f $startdir/pkg/opt/arch/bin/hostname $startdir/pkg/opt/arch/share/man/man1/hostname.1 || return 1

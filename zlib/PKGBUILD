@@ -3,7 +3,7 @@
 
 pkgname=zlib
 pkgver=1.2.3.3
-pkgrel=3
+pkgrel=5
 pkgdesc="A compression/decompression Library"
 arch=('macx86')
 license=('custom:zlib')
@@ -25,6 +25,9 @@ build() {
     patch -p0 < $startdir/zlib_configure_ver3.patch
     patch -p0 < $startdir/zlib_mac64.patch
 	./configure --prefix=/opt/arch --shared
+    #fix broken generated makefile
+    #sed -i 's/LDFLAGS=/LDFLAGS=-arch i686 -arch x86_64 /' Makefile
+    sed -i "s/LDSHARED=gcc/LDSHARED=gcc $UNIFLAGS/" Makefile
 	make || return 1
 	make install prefix=${pkgdir}/opt/arch || return 1
 	chmod 644 ${pkgdir}/opt/arch/lib/libz.a

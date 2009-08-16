@@ -5,7 +5,7 @@
 
 pkgname=t1lib
 pkgver=5.1.2
-pkgrel=2
+pkgrel=3
 pkgdesc="Library for generating character- and string-glyphs from Adobe Type 1 fonts"
 arch=('macx86')
 license=("GPL")
@@ -18,7 +18,18 @@ md5sums=('a5629b56b93134377718009df1435f3c')
 
 build() {
   cd "${srcdir}/${pkgname}-${pkgver}"
+
+  # force CC because libtool fails
+  # force CPP because when CC is forced, it fails
+  #./configure --prefix=/opt/arch CC="gcc $UNIFLAGS" CPP="gcc -E"
+
+  #or
+
   ./configure --prefix=/opt/arch
+  #and fix broken libtool for universal
+  sed -e "s|-dynamiclib|-dynamiclib ${UNIFLAGS}|g" -i~ libtool
+
+
   make without_doc || return 1
   make DESTDIR="${pkgdir}" install || return 1
 }

@@ -4,7 +4,7 @@
 
 pkgname=run-parts
 pkgver=2.30
-pkgrel=1
+pkgrel=2
 pkgdesc='run-parts from the debianutils package'
 arch=('macx86')
 url='http://packages.qa.debian.org/d/debianutils.html'
@@ -15,8 +15,8 @@ md5sums=('7fdd5f8395162d8728d4b79e97b9819e')
 
 build() {
 	cd $srcdir/debianutils-$pkgver
-	./configure --prefix=/opt/arch
-	make
+	./configure --prefix=/opt/arch --disable-dependency-tracking || return 1
+	make || return 1
 
     mkdir -p ${pkgdir}/opt/arch/bin
     mkdir -p ${pkgdir}/opt/arch/share/man/man8

@@ -1,0 +1,21 @@
+--- ../../Makefile-libbz2_dylib	2009-06-10 11:01:00.000000000 +0200
++++ Makefile-libbz2_dylib	2009-06-13 13:05:40.000000000 +0200
+@@ -23,7 +23,8 @@
+ SHELL=/bin/sh
+ CC=gcc
+ BIGFILES=-D_FILE_OFFSET_BITS=64
+-CFLAGS=-fpic -fPIC -Wall -Winline -O2 -g $(BIGFILES) $(BIGFILES)
++ARCH=-arch i686 -arch x86_64
++CFLAGS=-fpic -fPIC -Wall -Winline -O2 -g $(BIGFILES) $(BIGFILES) $(ARCH)
+ 
+ OBJS= blocksort.o  \
+       huffman.o    \
+@@ -34,7 +35,7 @@
+       bzlib.o
+ 
+ all: $(OBJS)
+-	$(CC) -dynamiclib -install_name /opt/arch/lib/libbz2.1.0.dylib -o libbz2.1.0.4.dylib $(OBJS)
++	$(CC) $(ARCH) -dynamiclib -install_name /opt/arch/lib/libbz2.1.0.dylib -o libbz2.1.0.4.dylib $(OBJS)
+ 	$(CC) $(CFLAGS) -o bzip2-shared bzip2.c libbz2.1.0.4.dylib
+ 	rm -f libbz2.1.0.dylib
+ 	ln -s libbz2.1.0.4.dylib libbz2.1.0.dylib

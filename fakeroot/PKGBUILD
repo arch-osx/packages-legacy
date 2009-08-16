@@ -3,7 +3,7 @@
 # Contributor: Jochem Kossen <j.kossen@home.nl>
 
 pkgname=fakeroot
-pkgver=1.12.1
+pkgver=1.13
 pkgrel=2
 pkgdesc="Gives a fake root environment, useful for building packages as a non-privileged user"
 arch=('macx86')
@@ -14,14 +14,46 @@ depends=()
 options=('!libtool')
 source=(http://ftp.debian.org/debian/pool/main/f/$pkgname/${pkgname}_${pkgver}.tar.gz
         fakeroot_mac.diff)
-md5sums=('87970d6784f536cde84f9bcbaaa52720'
+md5sums=('e0cbeceb066cc678c9fe1d6d35d24ceb'
          '6f9c9bdb51d97bdfd26cfe118be6fd9a')
 
 build() {
   cd $startdir/src/$pkgname-$pkgver
   patch -p0 < $startdir/fakeroot_mac.diff
-  ./configure --prefix=/opt/arch --libdir=/opt/arch/lib/libfakeroot --disable-static
-  make || return 1
+
+  #./configure --prefix=/opt/arch --libdir=/opt/arch/lib/libfakeroot --disable-static --disable-dependency-tracking
+  #make || return 1
+  #make DESTDIR=$startdir/pkg install
+
+  # manual universal build, builds correctly
+  # but apparently does not work when running makepkg
+  # maybe for various external reasons, such as using wrong sdk
+
+  arches="i386 x86_64"
+  binaries="opt/arch/bin/faked opt/arch/lib/libfakeroot/libfakeroot-0.dylib opt/arch/lib/libfakeroot/libfakeroot.dylib"
+  #
+  original_cflags="$(echo $CFLAGS | sed 's^-arch [a-z0-9_][a-z0-9_]*^^g')"
+  original_ldflags="$(echo $LDFLAGS | sed 's^-arch [a-z0-9_][a-z0-9_]*^^g')"
+  echo $original_cflags
+  echo $original_ldflags
+  for arch in $arches; do
+    echo "building $arch"
+    make clean
+    CFLAGS="-arch $arch $original_cflags"
+    LDFLAGS="-arch $arch $original_ldflags"
+    echo $CFLAGS
+    ./configure --prefix=/opt/arch --libdir=/opt/arch/lib/libfakeroot --disable-static
+    make || return 1
+    mkdir -p $startdir/src/build/$arch
+    make DESTDIR=$startdir/src/build/$arch install
+  done
+  
   make DESTDIR=$startdir/pkg install
+  
+  for binary in $binaries; do
+    rm $startdir/pkg/$binary
+    lipo -create $startdir/src/build/*/$binary -output $startdir/pkg/$binary
+  done
+
 }
 

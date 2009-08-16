@@ -5,7 +5,7 @@
 
 pkgname=libexif
 pkgver=0.6.17
-pkgrel=1
+pkgrel=2
 pkgdesc="A library to parse an EXIF file and read the data from those tags"
 arch=('macx86')
 license=('LGPL')
@@ -17,7 +17,16 @@ md5sums=('f7cf4e623a48c9a3b13f7f95f0a41015')
 
 build() {
   cd "${srcdir}/${pkgname}-${pkgver}"
-  ./configure --prefix=/opt/arch || return 1
+
+  # coreutils basename doesn't work right with multiple -arch
+  # and prevents ar/ranlib/libtool to work correctly like this
+  #   basename: extra operand `unfat-77850/libmnote-fuji.a-i386/mnote-fuji-tag.o'
+  #   Try `basename --help' for more information.
+  # then build fails with missing symbols
+  # so I pacman -Rd coreutils for build time
+
+  ./configure --prefix=/opt/arch --disable-dependency-tracking \
+  || return 1
   make || return 1
   make DESTDIR="${pkgdir}" install || return 1
 }

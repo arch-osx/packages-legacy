@@ -3,7 +3,7 @@
 # ArchLinux Maintainer: judd <jvinet@zeroflux.org>
 pkgname=sed
 pkgver=4.1.5
-pkgrel=3
+pkgrel=4
 pkgdesc="GNU stream editor"
 arch=('macx86')
 url="http://www.gnu.org/software/sed"
@@ -17,7 +17,7 @@ build() {
   cd $startdir/src/$pkgname-$pkgver
   cp configure configure.orig
   patch -p0 < $startdir/sed_dont_require_sed.patch
-  ./configure --prefix=/opt/arch
+  ./configure --prefix=/opt/arch --disable-dependency-tracking
   make || return 1
   PATH="sed/:$PATH" ./configure.orig --prefix=/opt/arch
   make || return 1

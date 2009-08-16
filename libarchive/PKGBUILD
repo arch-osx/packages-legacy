@@ -3,7 +3,7 @@
 # ArchLinux Maintainer: Aaron Griffin <aaron@archlinux.org>
 pkgname=libarchive
 pkgver=2.6.1
-pkgrel=2
+pkgrel=3
 pkgdesc="library that can create and read several streaming archive formats"
 arch=(macx86)
 url="http://people.freebsd.org/~kientzle/libarchive/"
@@ -17,8 +17,12 @@ source=(http://libarchive.googlecode.com/files/libarchive-$pkgver.tar.gz)
 options=(libtool)
 
 build() {
+  
+  #CFLAGS="-arch i686 $(echo $CFLAGS | sed 's/-arch [A-Za-z0-9_-]*//g')"
+  #LDFLAGS="-arch i686 $(echo $LDFLAGS | sed 's/-arch [A-Za-z0-9_-]*//g')"
+
   cd $startdir/src/$pkgname-$pkgver
-  ./configure --prefix=/opt/arch --without-lzmadec
+  ./configure --prefix=/opt/arch --without-lzmadec --disable-dependency-tracking
 
   make || return 1
   make DESTDIR=$startdir/pkg install
@@ -27,6 +31,33 @@ build() {
   mkdir -p $startdir/pkg/opt/arch/share/licenses/libarchive
   install -m644 COPYING $startdir/pkg/opt/arch/share/licenses/libarchive/
   find $startdir/pkg -name \*.la -delete
+
+  # manual universal build, builds correctly
+  # but apparently does not work when running makepkg
+  # maybe for various external reasons, such as using wrong sdk
+  #arches="i686 x86_64"
+  #binaries="opt/arch/bin/faked opt/arch/lib/libfakeroot/libfakeroot-0.dylib opt/arch/lib/libfakeroot/libfakeroot.dylib"
+  #
+  #original_cflags="$CFLAGS"
+  #original_ldflags="$LDFLAGS"
+  #for arch in $arches; do
+  #  echo "building $arch"
+  #  make clean
+  #  CFLAGS="-arch $arch $original_cflags"
+  #  LDFLAGS="-arch $arch $original_ldflags"
+  #  ./configure --prefix=/opt/arch --libdir=/opt/arch/lib/libfakeroot --disable-static
+  #  make || return 1
+  #  mkdir -p $startdir/src/build/$arch
+  #  make DESTDIR=$startdir/src/build/$arch install
+  #done
+  #
+  #make DESTDIR=$startdir/pkg install
+  #
+  #for binary in $binaries; do
+  #  rm $startdir/pkg/$binary
+  #  lipo -create $startdir/src/build/*/$binary -output $startdir/pkg/$binary
+  #done
+
 }
 
 md5sums=('9d9f83947ee9d5732289ed48d00e3743')

@@ -3,7 +3,7 @@
 
 pkgname=libtiff
 pkgver=3.8.2
-pkgrel=4
+pkgrel=5
 pkgdesc="Library for manipulation of TIFF images"
 arch=('macx86')
 url="http://www.libtiff.org/"
@@ -35,7 +35,8 @@ build() {
   patch -Np1 -i ${srcdir}/CVE-2006-3459-3465.patch || return 1
   patch -Np1 -i ${srcdir}/tiff2pdf-compression.patch || return 1
   patch -Np1 -i ${srcdir}/tiff-3.8.2-CVE-2008-2327.patch || return 1
-  ./configure --prefix=/opt/arch --mandir=/opt/arch/share/man || return 1
+  ./configure --prefix=/opt/arch --mandir=/opt/arch/share/man --disable-dependency-tracking \
+  || return 1
   make || return 1
   make DESTDIR=${pkgdir} install || return 1
   install -D -m644 COPYRIGHT ${pkgdir}/opt/arch/share/licenses/${pkgname}/LICENSE || return 1

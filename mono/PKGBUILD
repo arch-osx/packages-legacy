@@ -4,7 +4,7 @@
 # Contributor: Brice Carpentier <brice@dlfp.org>
 
 pkgname=mono
-pkgver=2.4
+pkgver=2.4.2.2
 pkgrel=2
 pkgdesc="Free implementation of the .NET platform including runtime and compiler"
 arch=('macx86')
@@ -18,7 +18,7 @@ conflicts=('monodoc')
 source=(http://ftp.novell.com/pub/mono/sources/${pkgname}/${pkgname}-${pkgver}.tar.bz2
         mono.rc.d
 	mini_amd64.patch)
-md5sums=('da2bf1c0aba2958d26c5e8a9a49fd9d1'
+md5sums=('54aac9b914c5a4dc81c2bfd058df1c93'
          '8315e46c6a6e9625502521fc0ad1a322'
          '332530de044cabff941c712b7f2ace8e')
 
@@ -30,6 +30,12 @@ build() {
   # build mono
   cd ${startdir}/src/${pkgname}-${pkgver}
 
+  #arch="i386"
+  #export MACOSX_DEPLOYMENT_TARGET=10.5
+  #SDK="/Developer/SDKs/MacOSX10.5.sdk"
+  #export CFLAGS="-arch $arch $(echo $CFLAGS | sed 's^-arch [a-z0-9_][a-z0-9_]*^^g') -isysroot ${SDK}"
+  #export LDFLAGS="-arch $arch $(echo $LDFLAGS | sed 's^-arch [a-z0-9_][a-z0-9_]*^^g') -isysroot ${SDK} -Wl,-syslibroot,${SDK}"
+
   #patch -p0 < ${srcdir}/mini_amd64.patch || return 1
 
   #rm -f libgc/libtool.m4
@@ -39,10 +45,12 @@ build() {
               --with-libgdiplus=installed --with-icu=no \
               --with-tls=pthread --with-jit=yes --with-preview=yes \
               --with-sigaltstack=yes --enable-nunit-tests \
-	      --with-moonlight=yes
+	      --with-moonlight=yes \
+          || return 1
+  sed -i~ -e "s/LOCAL_CFLAGS = /LOCAL_CFLAGS = -arch $ARCH /" mcs/jay/Makefile
   make || return 1
-  sed -i "/NO_INSTALL = yes/d" mcs/nunit20/nunit-console/Makefile
-  make DESTDIR=${startdir}/pkg install
+  sed -i~ -e "/NO_INSTALL = yes/d" mcs/nunit20/nunit-console/Makefile
+  make DESTDIR=${startdir}/pkg install || return 1
 
   # install daemons and pathes
   #mkdir -p ${startdir}/pkg/opt/arch/etc/rc.d

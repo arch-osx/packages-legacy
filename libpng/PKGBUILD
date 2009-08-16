@@ -5,7 +5,7 @@
 
 pkgname=libpng
 pkgver=1.2.34
-pkgrel=1
+pkgrel=2
 pkgdesc="A collection of routines used to create PNG format graphics files"
 arch=('macx86')
 url="http://www.libpng.org/pub/png/libpng.html"
@@ -30,14 +30,20 @@ build() {
   autoconf || return 1
   automake --add-missing || return 1
 
-  ./configure --prefix=/opt/arch || return 1
+  ./configure --prefix=/opt/arch --disable-dependency-tracking \
+      || return 1
 
   sed -e 's^LIBS = -lz^LIBS = -L/opt/arch/lib -lz^' -i~ Makefile
   make ECHO=echo || return 1
   make ECHO=echo DESTDIR=${startdir}/pkg install || return 1
 
   cd contrib/pngminus
-  make ECHO=echo PNGLIB="-L/opt/arch/lib -L${startdir}/pkg/opt/arch/lib -lpng" -f makefile.std png2pnm pnm2png
+
+  sed -i~ -e "s/CFLAGS=/CFLAGS=$UNIFLAGS /" makefile.std
+  sed -i~ -e "s/LDFLAGS=/LDFLAGS=$UNIFLAGS /" makefile.std
+  sed -i~ -e "s/LDFLAGSS=/LDFLAGSS=$UNIFLAGS /" makefile.std
+
+  make ECHO=echo PNGLIB="-L/opt/arch/lib -L${startdir}/pkg/opt/arch/lib -lpng" -f makefile.std png2pnm pnm2png || return 1
   install -m755 png2pnm pnm2png ${startdir}/pkg/opt/arch/bin
   install -m755 -d ${startdir}/pkg/opt/arch/share/licenses/${pkgname}
   install -m644 ../../LICENSE ${startdir}/pkg/opt/arch/share/licenses/${pkgname}/ || return 1

@@ -1,7 +1,7 @@
 # ArchOSX Maintainer: Kevin Barry <barryk gmail com>
 pkgname=libiconv
 pkgver=1.12
-pkgrel=2
+pkgrel=3
 pkgdesc="Text encoding converter"
 arch=('macx86')
 url="http://www.gnu.org/software/libiconv/"
@@ -17,9 +17,26 @@ md5sums=() #generate with 'makepkg -g'
 build() {
   cd "$srcdir/$pkgname-$pkgver"
 
-  ./configure --prefix=/opt/arch
+  ./configure --prefix=/opt/arch || return 1
+
+  # For some reason this (correct) libtool generated line goes wrong
+  # on make install when there's a libiconv installed.
+  # It gets the installed version instead of the build one.
+  # There should be a way to tell libtool about DESTDIR 
+  # I initially noticed it because it was 32bit only and symbols failed when building universal
+  # but it might just slip under the radar when arches are correct and match.
+  #
+  #gcc -arch i686 -arch x86_64 -isysroot /Developer/SDKs/MacOSX10.5.sdk -Wl,-syslibroot -Wl,/Developer/SDKs/MacOSX10.5.sdk -arch i686 -arch x86_64 -isysroot /Developer/SDKs/MacOSX10.5.sdk -O2 -pipe -I/opt/arch/include iconv.o -o iconv  -L/opt/arch/lib ../srclib/libicrt.a /Users/tyches/Workspace/arch-osx/github/libiconv/pkg//opt/arch/lib/libiconv.dylib
+  #
+  # Failed attempt to fix follows, I don't know libtool enough
+  # it seems to get the full path from the .la, without DESTDIR
+  #sed -i 's#*) $(LIBTOOL_LINK) $(CC) $(LDFLAGS)#*) $(LIBTOOL_LINK) $(CC) `echo $(LDFLAGS) | sed \'s!-L/opt/arch/lib!!\'`#' 
+  #sed -i 's#*) $(LIBTOOL_LINK) $(CC) $(LDFLAGS)#*) LDFLAGS='' $(LIBTOOL_LINK) $(CC)#' src/Makefile
+  #
+  # well, whatever, I pacman -Rd libiconv and it went right
+
   make || return 1
-  make DESTDIR="$pkgdir/" install
+  make DESTDIR="$pkgdir/" install || return 1
   find ${pkgdir} -name \*.la -delete
   # This file conflicts with coreutils
   rm "$pkgdir/opt/arch/lib/charset.alias"

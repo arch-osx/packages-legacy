@@ -5,7 +5,7 @@
 
 pkgname=texinfo
 pkgver=4.13a
-pkgrel=3
+pkgrel=4
 pkgdesc="Utilities to work with and produce manuals, ASCII text, and on-line documentation from a single source file"
 arch=('macx86')
 url="http://www.gnu.org/software/texinfo/"
@@ -19,7 +19,7 @@ sha1sums=('a1533cf8e03ea4fa6c443b73f4c85e4da04dead0')
 
 build() {
    cd ${srcdir}/${pkgname}-4.13
-   ./configure --prefix=/opt/arch || return 1
+   ./configure --prefix=/opt/arch --disable-dependency-tracking || return 1
    make || return 1
    make DESTDIR=${pkgdir} install || return 1
    rm -f ${pkgdir}/opt/arch/share/info/dir

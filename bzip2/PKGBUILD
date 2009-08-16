@@ -4,7 +4,7 @@
 
 pkgname=bzip2
 pkgver=1.0.5
-pkgrel=3
+pkgrel=4
 pkgdesc="A high-quality data compression program"
 arch=('macx86')
 license=('custom')
@@ -17,6 +17,8 @@ source=(http://www.bzip.org/$pkgver/bzip2-$pkgver.tar.gz
 build() {
   cd $startdir/src/$pkgname-$pkgver
   cp $startdir/Makefile-libbz2_dylib .
+  patch -p0 -i $startdir/universal_makefile.patch
+  patch -p0 -i $startdir/universal_makefile_dylib.patch
   mkdir -p $startdir/pkg/opt/arch/bin $startdir/pkg/opt/arch/share/man/man1
   mkdir -p $startdir/pkg/opt/arch/include $startdir/pkg/opt/arch/lib
   make -f Makefile-libbz2_dylib || return 1

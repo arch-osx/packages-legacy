@@ -5,7 +5,7 @@
 
 pkgname=httptunnel
 pkgver=3.3
-pkgrel=1
+pkgrel=3
 pkgdesc="httptunnel creates a bidirectional virtual data connection tunnelled in HTTP requests"
 arch=('macx86')
 url="http://www.nocrew.org/software/httptunnel"

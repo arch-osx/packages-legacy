@@ -2,7 +2,7 @@
 # ArchLinux Maintainer: judd <jvinet zeroflux.org>
 pkgname=freetype2
 pkgver=2.3.8
-pkgrel=1
+pkgrel=2
 pkgdesc="TrueType font rendering library"
 arch=('macx86')
 license=('GPL')
