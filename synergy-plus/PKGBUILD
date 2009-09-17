@@ -1,5 +1,6 @@
+#
 
-pkgname=synergyplus
+pkgname=synergy-plus
 pkgver=1.3.4
 pkgrel=1
 pkgdesc="A tool to share keyboard and mouse over tcp"
@@ -15,7 +16,7 @@ build() {
   cd ${srcdir}/synergy-plus-${pkgver}
   export CC=gcc-4.0
   export CXX=g++-4.0
-  ./configure --prefix=/opt/arch || return 1
+  ./configure --prefix=/opt/arch --disable-debug || return 1
   make || return 1
   make DESTDIR=${pkgdir} install || return 1
 
