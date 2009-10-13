@@ -2,7 +2,7 @@
 # ArchLinux Maintainer: Sven-Hendrik Haase <sh@lutzhaase.com>
 pkgname=python3
 pkgver=3.1.1
-pkgrel=1
+pkgrel=2
 pkgdesc="Python is a high-level scripting language."
 url="http://www.python.org"
 arch=('macx86')
@@ -16,8 +16,12 @@ md5sums=('d1ddd9f16e3c6a51c7208f33518cd674')
 
 build() {
   cd $srcdir/Python-$pkgver/
+
+  # don't look for tcl/tk in OSX frameworks, use our own
+  sed -i~ -e 's/self.detect_tkinter_darwin(inc_dirs, lib_dirs)/False/' setup.py
   
-  ./configure --prefix=/opt/arch --with-threads --enable-shared
+  ./configure --prefix=/opt/arch --oldincludedir=/opt/arch --with-threads --enable-shared
+
   make || return 1
   make DESTDIR=$pkgdir install
 
