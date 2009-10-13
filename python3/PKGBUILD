@@ -19,6 +19,9 @@ build() {
 
   # don't look for tcl/tk in OSX frameworks, use our own
   sed -i~ -e 's/self.detect_tkinter_darwin(inc_dirs, lib_dirs)/False/' setup.py
+
+  # architecture doesn't propagate to module compilation
+  sed -i~ -e "s#extra_args = ext.extra_compile_args#extra_args = ext.extra_compile_args + ['-arch', 'i386']#" Lib/distutils/command/build_ext.py
   
   ./configure --prefix=/opt/arch --oldincludedir=/opt/arch --with-threads --enable-shared
 

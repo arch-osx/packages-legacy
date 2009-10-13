@@ -34,10 +34,13 @@ build() {
 
   patch -Np0 -i ${srcdir}/python-2.6-internal-expat.patch
   patch -Np1 -i ${srcdir}/python-2.6-gdbm.patch
-  patch -p0 < ${startdir}/makefile_dylib.patch
+  #patch -p0 < ${startdir}/makefile_dylib.patch
 
   # don't look for tcl/tk in OSX frameworks, use our own
   sed -i~ -e 's/self.detect_tkinter_darwin(inc_dirs, lib_dirs)/False/' setup.py
+
+  # architecture doesn't propagate to module compilation
+  sed -i~ -e "s#extra_args = ext.extra_compile_args#extra_args = ext.extra_compile_args + ['-arch', 'i386']#" Lib/distutils/command/build_ext.py
 
   ./configure --prefix=/opt/arch --enable-shared --with-threads --enable-unicode
   
@@ -53,29 +56,29 @@ build() {
   ln -sf python${_pybasever} ${pkgdir}/opt/arch/bin/python2
 
   mkdir -p ${pkdir}/opt/arch/lib
-  install -m755 libpython2.6.dylib ${pkgdir}/opt/arch/lib/libpython2.6.dylib
+  /opt/arch/bin/install -m755 libpython2.6.dylib ${pkgdir}/opt/arch/lib/libpython2.6.dylib
   ln -s libpython2.6.dylib ${pkgdir}/opt/arch/lib/libpython2.dylib
 
   # Install the tools
   #modulator
   sed -i~ -e "s#%%PYBASEVER%%#${_pybasever}#" ${srcdir}/modulator-launcher
-  install -m755 ${srcdir}/modulator-launcher ${pkgdir}/opt/arch/bin/modulator
+  /opt/arch/bin/install -m755 ${srcdir}/modulator-launcher ${pkgdir}/opt/arch/bin/modulator
   cp -r Tools/modulator ${pkgdir}/opt/arch/lib/python${_pybasever}/site-packages/
 
   #pynche
   sed -i~ -e "s#%%PYBASEVER%%#${_pybasever}#" ${srcdir}/pynche-launcher
-  install -m755 ${srcdir}/pynche-launcher ${pkgdir}/opt/arch/bin/pynche
+  /opt/arch/bin/install -m755 ${srcdir}/pynche-launcher ${pkgdir}/opt/arch/bin/pynche
   rm -f Tools/pynche/*.pyw
   cp -r Tools/pynche ${pkgdir}/opt/arch/lib/python${_pybasever}/site-packages/
 
   #gettext
-  install -m755 Tools/i18n/pygettext.py ${pkgdir}/opt/arch/bin/
-  install -m755 Tools/i18n/msgfmt.py ${pkgdir}/opt/arch/bin/
+  /opt/arch/bin/install -m755 Tools/i18n/pygettext.py ${pkgdir}/opt/arch/bin/
+  /opt/arch/bin/install -m755 Tools/i18n/msgfmt.py ${pkgdir}/opt/arch/bin/
 
   mkdir -p ${pkgdir}/opt/arch/lib/python${_pybasever}/Tools/scripts
-  install Tools/scripts/README ${pkgdir}/opt/arch/lib/python${_pybasever}/Tools/scripts/
-  install Tools/scripts/*py ${pkgdir}/opt/arch/lib/python${_pybasever}/Tools/scripts/
+  /opt/arch/bin/install Tools/scripts/README ${pkgdir}/opt/arch/lib/python${_pybasever}/Tools/scripts/
+  /opt/arch/bin/install Tools/scripts/*py ${pkgdir}/opt/arch/lib/python${_pybasever}/Tools/scripts/
 
   # license
-  install -Dm644 LICENSE ${pkgdir}/opt/arch/share/licenses/${pkgname}/LICENSE
+  /opt/arch/bin/install -Dm644 LICENSE ${pkgdir}/opt/arch/share/licenses/${pkgname}/LICENSE
 }
