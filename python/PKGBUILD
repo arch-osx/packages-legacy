@@ -4,7 +4,7 @@
 # Contributer: Jason Chu <jason@archlinux.org>
 
 pkgname=python
-pkgver=2.6.1
+pkgver=2.6.2
 pkgrel=1
 _pybasever=2.6
 pkgdesc="A high-level scripting language"
@@ -22,7 +22,7 @@ source=(http://www.python.org/ftp/python/${pkgver}/Python-${pkgver}.tar.bz2
 	modulator-launcher
 	pynche-launcher
     makefile_dylib.patch)
-md5sums=('e81c2f0953aa60f8062c05a4673f2be0'
+md5sums=('245db9f1e0f09ab7e0faaa0cf7301011'
          'a74f266ae9a01c4af08fcd7d11f235bb'
          '13fab4bb2cacbc433e62d7191a17f71e'
          '39f418937ccbda6cd81e10cc705327b8'
@@ -35,6 +35,9 @@ build() {
   patch -Np0 -i ${srcdir}/python-2.6-internal-expat.patch
   patch -Np1 -i ${srcdir}/python-2.6-gdbm.patch
   patch -p0 < ${startdir}/makefile_dylib.patch
+
+  # don't look for tcl/tk in OSX frameworks, use our own
+  sed -i~ -e 's/self.detect_tkinter_darwin(inc_dirs, lib_dirs)/False/' setup.py
 
   ./configure --prefix=/opt/arch --enable-shared --with-threads --enable-unicode
   
