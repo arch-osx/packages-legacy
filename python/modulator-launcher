@@ -1,2 +1,0 @@
-#!/bin/bash
-exec /opt/arch/lib/python%%PYBASEVER%%/site-packages/modulator/modulator.py

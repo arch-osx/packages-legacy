@@ -1,7 +1,0 @@
-post_install() {
-	opt/arch/sbin/update-ca-certificates --fresh  &> /dev/null
-}
-
-post_upgrade() {
-	post_install
-}
